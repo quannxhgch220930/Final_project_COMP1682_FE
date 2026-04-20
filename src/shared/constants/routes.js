@@ -1,5 +1,15 @@
 export const ROUTES = {
-  adminProducts: '/admin/products',
+  admin: '/admin',
+  adminLogin: '/admin/login',
+  cart: '/cart',
+  home: '/',
   login: '/login',
+  oauthCallback: '/oauth2/callback',
+  orderDetail: (id) => `/orders/${id}`,
+  orders: '/orders',
+  profile: '/profile',
+  productDetail: (id) => `/products/${id}`,
   products: '/products',
+  register: '/register',
+  wishlist: '/wishlist',
 }

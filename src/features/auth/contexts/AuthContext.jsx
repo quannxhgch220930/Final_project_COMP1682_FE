@@ -1,25 +1,29 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { authClientApi } from '../api/authClient.api'
-import { clearAccessToken, getAccessToken } from '../lib/tokenStorage'
+import {
+  clearAccessToken,
+  getAccessToken,
+  setAccessToken,
+} from '../lib/tokenStorage'
+import { AuthContext } from './AuthStateContext'
 
-const AuthContext = createContext(null)
+function getInitialAuthState() {
+  const hasToken = Boolean(getAccessToken())
 
-export function AuthProvider({ children }) {
-  const [authState, setAuthState] = useState({
-    initialized: false,
+  return {
+    initialized: !hasToken,
     isAuthenticated: false,
     user: null,
-  })
+  }
+}
+
+export function AuthProvider({ children }) {
+  const [authState, setAuthState] = useState(getInitialAuthState)
 
   useEffect(() => {
     const token = getAccessToken()
 
     if (!token) {
-      setAuthState({
-        initialized: true,
-        isAuthenticated: false,
-        user: null,
-      })
       return
     }
 
@@ -42,8 +46,11 @@ export function AuthProvider({ children }) {
       })
   }, [])
 
-  const login = async (credentials) => {
-    const response = await authClientApi.login(credentials)
+  const login = async (credentials, options = {}) => {
+    const loginRequest = options.adminOnly
+      ? authClientApi.adminLogin
+      : authClientApi.login
+    const response = await loginRequest(credentials)
 
     setAuthState({
       initialized: true,
@@ -72,9 +79,33 @@ export function AuthProvider({ children }) {
     }))
   }
 
+  const authenticateWithToken = async (token) => {
+    setAccessToken(token)
+
+    try {
+      const user = await authClientApi.getCurrentUser()
+      setAuthState({
+        initialized: true,
+        isAuthenticated: true,
+        user,
+      })
+
+      return user
+    } catch (error) {
+      clearAccessToken()
+      setAuthState({
+        initialized: true,
+        isAuthenticated: false,
+        user: null,
+      })
+      throw error
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
+        authenticateWithToken,
         ...authState,
         login,
         logout,
@@ -84,14 +115,4 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export function useAuthContext() {
-  const context = useContext(AuthContext)
-
-  if (!context) {
-    throw new Error('useAuthContext must be used within AuthProvider')
-  }
-
-  return context
 }

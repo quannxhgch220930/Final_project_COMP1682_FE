@@ -1,13 +1,25 @@
 const ACCESS_TOKEN_KEY = 'access_token'
 
+function getStorage() {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  try {
+    return window.localStorage
+  } catch {
+    return null
+  }
+}
+
 export function clearAccessToken() {
-  window.localStorage.removeItem(ACCESS_TOKEN_KEY)
+  getStorage()?.removeItem(ACCESS_TOKEN_KEY)
 }
 
 export function getAccessToken() {
-  return window.localStorage.getItem(ACCESS_TOKEN_KEY)
+  return getStorage()?.getItem(ACCESS_TOKEN_KEY) ?? null
 }
 
 export function setAccessToken(token) {
-  window.localStorage.setItem(ACCESS_TOKEN_KEY, token)
+  getStorage()?.setItem(ACCESS_TOKEN_KEY, token)
 }

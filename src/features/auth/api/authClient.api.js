@@ -8,6 +8,22 @@ function extractAccessToken(response) {
 }
 
 export const authClientApi = {
+  adminLogin: async (payload) => {
+    const response = await httpClient.post(API_ENDPOINTS.auth.adminLogin, payload)
+    const accessToken = extractAccessToken(response)
+
+    if (accessToken) {
+      setAccessToken(accessToken)
+    }
+
+    return {
+      accessToken,
+      code: response?.code ?? 200,
+      data: normalizeUserResponse(response?.data),
+      message: response?.message || 'Admin login successful',
+      timestamp: response?.timestamp ?? null,
+    }
+  },
   changePassword: async (payload) => {
     const response = await httpClient.post(API_ENDPOINTS.auth.changePassword, payload)
 

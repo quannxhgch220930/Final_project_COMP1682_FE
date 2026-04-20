@@ -61,64 +61,83 @@ function RegisterForm() {
   }
 
   return (
-    <form className="auth-card stack" onSubmit={handleSubmit}>
-      <div className="field">
-        <label htmlFor="register-full-name">Họ tên</label>
+    <form
+      className="grid gap-5 rounded-2xl border border-amber-200/70 bg-white/70 p-6 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur"
+      onSubmit={handleSubmit}
+    >
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="register-full-name">
+          Full name
+        </label>
         <Input
           id="register-full-name"
+          className="border-amber-200/80 bg-white/85 text-stone-900 placeholder:text-stone-400 focus:border-amber-300 focus:ring-amber-100"
           value={formData.fullName}
           onChange={handleChange('fullName')}
           placeholder="Nguyen Van A"
         />
-        {errors.fullName ? <p className="error-text">{errors.fullName}</p> : null}
+        {errors.fullName ? <p className="text-sm text-rose-600">{errors.fullName}</p> : null}
       </div>
 
-      <div className="field">
-        <label htmlFor="register-email">Email</label>
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="register-email">
+          Email
+        </label>
         <Input
           id="register-email"
+          className="border-amber-200/80 bg-white/85 text-stone-900 placeholder:text-stone-400 focus:border-amber-300 focus:ring-amber-100"
           type="email"
           value={formData.email}
           onChange={handleChange('email')}
           placeholder="you@example.com"
         />
-        {errors.email ? <p className="error-text">{errors.email}</p> : null}
+        {errors.email ? <p className="text-sm text-rose-600">{errors.email}</p> : null}
       </div>
 
-      <div className="field">
-        <label htmlFor="register-password">Mật khẩu</label>
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="register-password">
+          Password
+        </label>
         <Input
           id="register-password"
+          className="border-amber-200/80 bg-white/85 text-stone-900 placeholder:text-stone-400 focus:border-amber-300 focus:ring-amber-100"
           type="password"
           value={formData.password}
           onChange={handleChange('password')}
-          placeholder="Tối thiểu 8 ký tự"
+          placeholder="At least 8 characters"
         />
-        {errors.password ? <p className="error-text">{errors.password}</p> : null}
+        {errors.password ? <p className="text-sm text-rose-600">{errors.password}</p> : null}
       </div>
 
-      <div className="field">
-        <label htmlFor="register-confirm-password">Xác nhận mật khẩu</label>
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="register-confirm-password">
+          Confirm password
+        </label>
         <Input
           id="register-confirm-password"
+          className="border-amber-200/80 bg-white/85 text-stone-900 placeholder:text-stone-400 focus:border-amber-300 focus:ring-amber-100"
           type="password"
           value={formData.confirmPassword}
           onChange={handleChange('confirmPassword')}
-          placeholder="Nhập lại mật khẩu"
+          placeholder="Retype your password"
         />
         {errors.confirmPassword ? (
-          <p className="error-text">{errors.confirmPassword}</p>
+          <p className="text-sm text-rose-600">{errors.confirmPassword}</p>
         ) : null}
       </div>
 
-      <div className="button-row">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Registering...' : 'Register'}
         </Button>
       </div>
 
-      {status ? <span className="badge">{status}</span> : null}
-      {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
+      {status ? (
+        <span className="inline-flex w-fit items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+          {status}
+        </span>
+      ) : null}
+      {errorMessage ? <p className="text-sm text-rose-600">{errorMessage}</p> : null}
     </form>
   )
 }

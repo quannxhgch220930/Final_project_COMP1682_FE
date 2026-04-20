@@ -80,9 +80,14 @@ function ChangePasswordForm() {
   }
 
   return (
-    <form className="auth-card stack" onSubmit={handleSubmit}>
-      <div className="field">
-        <label htmlFor="old-password">Current password</label>
+    <form
+      className="grid gap-5 rounded-2xl border border-stone-200 bg-white/85 p-6 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur"
+      onSubmit={handleSubmit}
+    >
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="old-password">
+          Current password
+        </label>
         <Input
           id="old-password"
           type="password"
@@ -90,11 +95,13 @@ function ChangePasswordForm() {
           onChange={handleChange('oldPassword')}
           placeholder="Enter your current password"
         />
-        {errors.oldPassword ? <p className="error-text">{errors.oldPassword}</p> : null}
+        {errors.oldPassword ? <p className="text-sm text-rose-600">{errors.oldPassword}</p> : null}
       </div>
 
-      <div className="field">
-        <label htmlFor="new-password">New password</label>
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="new-password">
+          New password
+        </label>
         <Input
           id="new-password"
           type="password"
@@ -102,11 +109,13 @@ function ChangePasswordForm() {
           onChange={handleChange('newPassword')}
           placeholder="At least 8 characters"
         />
-        {errors.newPassword ? <p className="error-text">{errors.newPassword}</p> : null}
+        {errors.newPassword ? <p className="text-sm text-rose-600">{errors.newPassword}</p> : null}
       </div>
 
-      <div className="field">
-        <label htmlFor="confirm-password">Confirm new password</label>
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="confirm-password">
+          Confirm new password
+        </label>
         <Input
           id="confirm-password"
           type="password"
@@ -115,18 +124,22 @@ function ChangePasswordForm() {
           placeholder="Retype the new password"
         />
         {errors.confirmPassword ? (
-          <p className="error-text">{errors.confirmPassword}</p>
+          <p className="text-sm text-rose-600">{errors.confirmPassword}</p>
         ) : null}
       </div>
 
-      <div className="button-row">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Updating...' : 'Change password'}
         </Button>
       </div>
 
-      {status ? <span className="badge">{status}</span> : null}
-      {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
+      {status ? (
+        <span className="inline-flex w-fit items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+          {status}
+        </span>
+      ) : null}
+      {errorMessage ? <p className="text-sm text-rose-600">{errorMessage}</p> : null}
     </form>
   )
 }

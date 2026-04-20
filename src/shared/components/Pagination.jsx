@@ -2,7 +2,7 @@ import Button from '../ui/Button'
 
 function Pagination({ currentPage, totalPages, onChange }) {
   return (
-    <div className="pagination">
+    <div className="flex flex-wrap items-center gap-3">
       <Button
         type="button"
         variant="secondary"
@@ -10,7 +10,7 @@ function Pagination({ currentPage, totalPages, onChange }) {
       >
         Previous
       </Button>
-      <span className="muted">
+      <span className="text-sm text-stone-500">
         Page {currentPage} / {totalPages}
       </span>
       <Button

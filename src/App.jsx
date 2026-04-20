@@ -1,11 +1,14 @@
 import AppProviders from './app/providers'
+import AppErrorBoundary from './app/components/AppErrorBoundary'
 import AppRouter from './app/router'
 
 function App() {
   return (
-    <AppProviders>
-      <AppRouter />
-    </AppProviders>
+    <AppErrorBoundary>
+      <AppProviders>
+        <AppRouter />
+      </AppProviders>
+    </AppErrorBoundary>
   )
 }
 

@@ -43,9 +43,14 @@ function ProfileForm({ initialValues, onSubmit }) {
   }
 
   return (
-    <form className="auth-card stack" onSubmit={handleSubmit}>
-      <div className="field">
-        <label htmlFor="profile-full-name">Full name</label>
+    <form
+      className="grid gap-5 rounded-2xl border border-stone-200 bg-white/85 p-6 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur"
+      onSubmit={handleSubmit}
+    >
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="profile-full-name">
+          Full name
+        </label>
         <Input
           id="profile-full-name"
           value={formData.fullName}
@@ -54,8 +59,10 @@ function ProfileForm({ initialValues, onSubmit }) {
         />
       </div>
 
-      <div className="field">
-        <label htmlFor="profile-avatar-url">Avatar URL</label>
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-stone-700" htmlFor="profile-avatar-url">
+          Avatar URL
+        </label>
         <Input
           id="profile-avatar-url"
           value={formData.avatarUrl}
@@ -64,14 +71,18 @@ function ProfileForm({ initialValues, onSubmit }) {
         />
       </div>
 
-      <div className="button-row">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Save profile'}
         </Button>
       </div>
 
-      {status ? <span className="badge">{status}</span> : null}
-      {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
+      {status ? (
+        <span className="inline-flex w-fit items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+          {status}
+        </span>
+      ) : null}
+      {errorMessage ? <p className="text-sm text-rose-600">{errorMessage}</p> : null}
     </form>
   )
 }
