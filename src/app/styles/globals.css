@@ -67,10 +67,17 @@ input {
 
 .admin-auth-shell {
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(180, 120, 58, 0.16), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(230, 185, 118, 0.12), transparent 28%),
+    linear-gradient(180deg, #13100d 0%, #201912 100%);
 }
 
 .admin-auth-panel {
   width: 100%;
+  background: rgba(28, 21, 15, 0.94);
+  border: 1px solid rgba(214, 168, 95, 0.18);
+  box-shadow: 0 26px 80px rgba(10, 8, 5, 0.42);
 }
 
 .admin-auth-header {

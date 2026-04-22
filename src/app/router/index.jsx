@@ -11,10 +11,14 @@ import WishlistPage from '../../features/commerce/pages/WishlistPage'
 import OrdersPage from '../../features/commerce/pages/OrdersPage'
 import OrderDetailPage from '../../features/commerce/pages/OrderDetailPage'
 import LoginPage from '../../features/auth/pages/LoginPage'
+import ForgotPasswordPage from '../../features/auth/pages/ForgotPasswordPage'
+import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage'
 import RegisterPage from '../../features/auth/pages/RegisterPage'
 import AdminLoginPage from '../../features/auth/pages/AdminLoginPage'
 import OAuthCallbackPage from '../../features/auth/pages/OAuthCallbackPage'
+import AdminOrdersPage from '../../features/admin/orders/pages/AdminOrdersPage'
 import AdminProductsPage from '../../features/admin/products/pages/AdminProductsPage'
+import AdminUsersPage from '../../features/admin/users/pages/AdminUsersPage'
 import ProfilePage from '../../features/user/pages/ProfilePage'
 import { navigateTo, usePathname } from '../../shared/lib/navigation'
 import { ROUTES } from '../../shared/constants/routes'
@@ -45,11 +49,20 @@ function AppRouter() {
   const productId = getProductIdFromPath(pathname)
   const orderId = getOrderIdFromPath(pathname)
   const isAdminRoute =
-    pathname === ROUTES.admin || pathname === ROUTES.adminLogin
+    pathname === ROUTES.admin ||
+    pathname === ROUTES.adminLogin ||
+    pathname === ROUTES.adminOrders ||
+    pathname === ROUTES.adminProducts ||
+    pathname === ROUTES.adminUsers
 
   const handleLogout = () => {
     logout()
     navigateTo(ROUTES.home, { replace: true })
+  }
+
+  const handleAdminLogout = () => {
+    logout()
+    navigateTo(ROUTES.adminLogin, { replace: true })
   }
 
   useEffect(() => {
@@ -63,7 +76,12 @@ function AppRouter() {
     }
 
     if (
-      (pathname === ROUTES.login || pathname === ROUTES.register) &&
+      (
+        pathname === ROUTES.login ||
+        pathname === ROUTES.register ||
+        pathname === ROUTES.forgotPassword ||
+        pathname === ROUTES.resetPassword
+      ) &&
       isAuthenticated
     ) {
       navigateTo(isAdmin ? ROUTES.admin : ROUTES.profile, { replace: true })
@@ -71,7 +89,7 @@ function AppRouter() {
     }
 
     if (pathname === ROUTES.adminLogin && isAdmin) {
-      navigateTo(ROUTES.admin, { replace: true })
+      navigateTo(ROUTES.adminProducts, { replace: true })
       return
     }
 
@@ -82,6 +100,11 @@ function AppRouter() {
 
     if (pathname === ROUTES.admin && !isAdmin) {
       navigateTo(ROUTES.adminLogin, { replace: true })
+      return
+    }
+
+    if (pathname === ROUTES.admin) {
+      navigateTo(ROUTES.adminProducts, { replace: true })
     }
   }, [initialized, isAdmin, isAdminRoute, isAuthenticated, pathname])
 
@@ -180,6 +203,33 @@ function AppRouter() {
       )
     }
 
+    if (pathname === ROUTES.forgotPassword) {
+      return (
+        <div className="auth-shell auth-shell--user">
+          <div className="auth-panel auth-panel--user">
+            <header className="auth-header">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+                RECOVERY PORTAL
+              </p>
+              <h1 className="text-4xl font-semibold tracking-tight text-stone-900">
+                Forgot password
+              </h1>
+              <p className="mt-2 text-sm text-stone-600">
+                Request a password reset email to recover your account access.
+              </p>
+            </header>
+            <ProtectedRoute
+              allowed={!isAuthenticated}
+              fallback={<ProfilePage />}
+              loading={!initialized}
+            >
+              <ForgotPasswordPage />
+            </ProtectedRoute>
+          </div>
+        </div>
+      )
+    }
+
     if (pathname === ROUTES.register) {
       return (
         <div className="auth-shell auth-shell--user">
@@ -191,6 +241,33 @@ function AppRouter() {
           >
             <RegisterPage />
           </ProtectedRoute>
+          </div>
+        </div>
+      )
+    }
+
+    if (pathname === ROUTES.resetPassword) {
+      return (
+        <div className="auth-shell auth-shell--user">
+          <div className="auth-panel auth-panel--user">
+            <header className="auth-header">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+                RECOVERY PORTAL
+              </p>
+              <h1 className="text-4xl font-semibold tracking-tight text-stone-900">
+                Reset password
+              </h1>
+              <p className="mt-2 text-sm text-stone-600">
+                Complete the password recovery by submitting your new password.
+              </p>
+            </header>
+            <ProtectedRoute
+              allowed={!isAuthenticated}
+              fallback={<ProfilePage />}
+              loading={!initialized}
+            >
+              <ResetPasswordPage />
+            </ProtectedRoute>
           </div>
         </div>
       )
@@ -211,11 +288,11 @@ function AppRouter() {
         <div className="auth-shell admin-auth-shell">
           <div className="auth-panel admin-auth-panel">
             <header className="auth-header admin-auth-header">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-100/70">
                 RESTRICTED AREA
               </p>
-              <h1 className="text-4xl font-semibold tracking-tight text-white">Admin login</h1>
-              <p className="mt-2 text-sm text-slate-300">
+              <h1 className="text-4xl font-semibold tracking-tight text-stone-50">Admin login</h1>
+              <p className="mt-2 text-sm text-stone-300">
                 Use an administrator account to enter the management area.
               </p>
             </header>
@@ -226,15 +303,43 @@ function AppRouter() {
       )
     }
 
-    if (pathname === ROUTES.admin) {
+    if (pathname === ROUTES.adminProducts) {
       return (
-        <AdminLayout onLogout={handleLogout}>
+        <AdminLayout onLogout={handleAdminLogout}>
           <ProtectedRoute
             allowed={isAdmin}
-            fallback={<p className="text-sm text-slate-300">Admin access required.</p>}
+            fallback={<p className="text-sm text-stone-300">Admin access required.</p>}
             loading={!initialized}
           >
             <AdminProductsPage />
+          </ProtectedRoute>
+        </AdminLayout>
+      )
+    }
+
+    if (pathname === ROUTES.adminOrders) {
+      return (
+        <AdminLayout onLogout={handleAdminLogout}>
+          <ProtectedRoute
+            allowed={isAdmin}
+            fallback={<p className="text-sm text-stone-300">Admin access required.</p>}
+            loading={!initialized}
+          >
+            <AdminOrdersPage />
+          </ProtectedRoute>
+        </AdminLayout>
+      )
+    }
+
+    if (pathname === ROUTES.adminUsers) {
+      return (
+        <AdminLayout onLogout={handleAdminLogout}>
+          <ProtectedRoute
+            allowed={isAdmin}
+            fallback={<p className="text-sm text-stone-300">Admin access required.</p>}
+            loading={!initialized}
+          >
+            <AdminUsersPage />
           </ProtectedRoute>
         </AdminLayout>
       )

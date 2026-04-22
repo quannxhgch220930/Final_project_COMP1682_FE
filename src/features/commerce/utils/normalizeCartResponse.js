@@ -1,18 +1,20 @@
 function normalizeCartItemResponse(item) {
   return {
+    currentPrice: Number(item?.currentPrice ?? item?.priceSnap ?? 0),
     id: String(item?.id ?? ''),
     product: {
       category: 'Product',
       id: String(item?.productId ?? ''),
       imageUrl: item?.productImage || '',
       name: item?.productName || 'Unnamed product',
-      price: Number(item?.currentPrice ?? item?.priceSnap ?? 0),
+      price: Number(item?.priceSnap ?? item?.currentPrice ?? 0),
       slug: item?.productSlug || '',
     },
+    priceSnap: Number(item?.priceSnap ?? item?.currentPrice ?? 0),
     productId: String(item?.productId ?? ''),
     quantity: Number(item?.quantity ?? 0),
     subtotal: Number(item?.subtotal ?? 0),
-    unitPrice: Number(item?.currentPrice ?? item?.priceSnap ?? 0),
+    unitPrice: Number(item?.priceSnap ?? item?.currentPrice ?? 0),
   }
 }
 

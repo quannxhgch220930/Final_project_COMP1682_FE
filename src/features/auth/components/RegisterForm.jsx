@@ -14,8 +14,11 @@ function RegisterForm() {
   })
   const [errors, setErrors] = useState({})
   const [errorMessage, setErrorMessage] = useState('')
+  const [lastRegisteredEmail, setLastRegisteredEmail] = useState('')
+  const [isResending, setIsResending] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState('')
+  const [verifyStatus, setVerifyStatus] = useState('')
 
   const handleChange = (field) => (event) => {
     setFormData((currentValue) => ({
@@ -35,6 +38,7 @@ function RegisterForm() {
     const nextErrors = validateRegister(formData)
     setErrors(nextErrors)
     setErrorMessage('')
+    setVerifyStatus('')
 
     if (Object.keys(nextErrors).length > 0) {
       setStatus('')
@@ -44,8 +48,10 @@ function RegisterForm() {
     setIsSubmitting(true)
 
     try {
+      const submittedEmail = formData.email.trim()
       const response = await authClientApi.register(formData)
       setStatus(response.message)
+      setLastRegisteredEmail(submittedEmail)
       setFormData({
         confirmPassword: '',
         email: '',
@@ -57,6 +63,25 @@ function RegisterForm() {
       setErrorMessage(handleApiError(error))
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleResendVerify = async () => {
+    if (!lastRegisteredEmail) {
+      return
+    }
+
+    setErrorMessage('')
+    setVerifyStatus('')
+    setIsResending(true)
+
+    try {
+      const response = await authClientApi.resendVerify(lastRegisteredEmail)
+      setVerifyStatus(response.message)
+    } catch (error) {
+      setErrorMessage(handleApiError(error))
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -133,8 +158,31 @@ function RegisterForm() {
       </div>
 
       {status ? (
-        <span className="inline-flex w-fit items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
-          {status}
+        <div className="grid gap-3">
+          <span className="inline-flex w-fit items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+            {status}
+          </span>
+          {lastRegisteredEmail ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-sm text-stone-600">
+                Didn&apos;t receive the verification email for{' '}
+                <strong className="text-stone-900">{lastRegisteredEmail}</strong>?
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isResending}
+                onClick={handleResendVerify}
+              >
+                {isResending ? 'Sending...' : 'Resend verification'}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      {verifyStatus ? (
+        <span className="inline-flex w-fit items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">
+          {verifyStatus}
         </span>
       ) : null}
       {errorMessage ? <p className="text-sm text-rose-600">{errorMessage}</p> : null}

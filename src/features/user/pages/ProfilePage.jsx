@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import ChangePasswordForm from '../../auth/components/ChangePasswordForm'
+import AddressBook from '../components/AddressBook'
 import ProfileForm from '../components/ProfileForm'
 import { useProfile } from '../hooks/useProfile'
 import { formatDate } from '../../../shared/utils/formatDate'
@@ -83,6 +84,8 @@ function ProfilePage() {
       </div>
 
       <ProfileForm initialValues={user} onSubmit={updateProfile} />
+
+      <AddressBook />
 
       <section className="grid gap-5">
         <div>

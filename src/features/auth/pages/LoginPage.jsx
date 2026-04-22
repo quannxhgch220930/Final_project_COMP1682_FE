@@ -45,6 +45,14 @@ function LoginPage() {
         >
           Create account
         </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          className="border-amber-200 bg-amber-50 text-stone-800 hover:bg-amber-100"
+          onClick={() => navigateTo(ROUTES.forgotPassword)}
+        >
+          Forgot password
+        </Button>
       </div>
 
       <LoginForm theme="portal-light" />

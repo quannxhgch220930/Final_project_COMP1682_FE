@@ -7,6 +7,8 @@ import { formatDate } from '../../../shared/utils/formatDate'
 import { handleApiError } from '../../../shared/utils/handleApiError'
 import { orderApi } from '../api/order.api'
 
+const CANCELLABLE_STATUSES = new Set(['PENDING', 'CONFIRMED'])
+
 function OrderDetailPage({ orderId }) {
   const [errorMessage, setErrorMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -87,6 +89,8 @@ function OrderDetailPage({ orderId }) {
       </section>
     )
   }
+
+  const canCancel = CANCELLABLE_STATUSES.has(order.status)
 
   return (
     <section className="grid gap-8">
@@ -244,11 +248,16 @@ function OrderDetailPage({ orderId }) {
             <Button
               type="button"
               variant="secondary"
-              disabled={isSubmitting || order.status === 'CANCELLED'}
+              disabled={isSubmitting || !canCancel}
               onClick={handleCancel}
             >
               {isSubmitting ? 'Cancelling...' : 'Cancel order'}
             </Button>
+            {!canCancel ? (
+              <p className="mt-2 text-sm text-stone-500">
+                Orders can only be cancelled while they are pending or confirmed.
+              </p>
+            ) : null}
           </div>
         </aside>
       </div>

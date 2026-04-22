@@ -1,27 +1,27 @@
 import Table from '../../../../shared/ui/Table'
 import Button from '../../../../shared/ui/Button'
-import { formatCurrency } from '../../../../shared/utils/formatCurrency'
+import { ROLES } from '../../../../shared/constants/roles'
 
-function createColumns({ actionProductId, onDelete, onEdit }) {
+function createColumns({ actionUserId, onDelete, onToggleLock, onToggleRole }) {
   return [
-    { key: 'name', label: 'Product' },
-    { key: 'category', label: 'Category' },
+    { key: 'fullName', label: 'Full name' },
+    { key: 'email', label: 'Email' },
+    { key: 'role', label: 'Role' },
     {
-      key: 'price',
-      label: 'Price',
-      render: (product) => formatCurrency(product.price),
+      key: 'isVerified',
+      label: 'Verified',
+      render: (user) => (user.isVerified ? 'Yes' : 'No'),
     },
-    { key: 'stock', label: 'Stock' },
     {
-      key: 'isActive',
-      label: 'Status',
-      render: (product) => (product.isActive ? 'Active' : 'Inactive'),
+      key: 'isLocked',
+      label: 'Locked',
+      render: (user) => (user.isLocked ? 'Yes' : 'No'),
     },
     {
       key: 'actions',
       label: 'Actions',
-      render: (product) => {
-        const isBusy = actionProductId === product.id
+      render: (user) => {
+        const isBusy = actionUserId === user.id
 
         return (
           <div className="flex flex-wrap gap-2">
@@ -29,14 +29,22 @@ function createColumns({ actionProductId, onDelete, onEdit }) {
               type="button"
               variant="secondary"
               disabled={isBusy}
-              onClick={() => onEdit(product)}
+              onClick={() => onToggleLock(user)}
             >
-              Edit
+              {user.isLocked ? 'Unlock' : 'Lock'}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={isBusy}
+              onClick={() => onToggleRole(user)}
+            >
+              {user.role === ROLES.admin ? 'Make user' : 'Make admin'}
             </Button>
             <Button
               type="button"
               disabled={isBusy}
-              onClick={() => onDelete(product)}
+              onClick={() => onDelete(user)}
             >
               Delete
             </Button>
@@ -47,13 +55,13 @@ function createColumns({ actionProductId, onDelete, onEdit }) {
   ]
 }
 
-function ProductTable(props) {
+function UserTable(props) {
   return (
     <Table
       bodyCellClassName="px-3 py-3 align-top text-stone-950"
       columns={createColumns(props)}
       containerClassName="border-amber-200/35 bg-[rgba(250,246,240,0.96)]"
-      data={props.products}
+      data={props.users}
       emptyClassName="px-3 py-6 text-center text-stone-600"
       headCellClassName="px-3 py-3 font-semibold uppercase tracking-[0.14em]"
       headRowClassName="border-b border-stone-300/70 text-stone-700"
@@ -62,4 +70,4 @@ function ProductTable(props) {
   )
 }
 
-export default ProductTable
+export default UserTable

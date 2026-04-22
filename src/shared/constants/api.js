@@ -1,6 +1,14 @@
 export const API_ENDPOINTS = {
+  addresses: {
+    create: '/addresses',
+    delete: (id) => `/addresses/${id}`,
+    list: '/addresses',
+    update: (id) => `/addresses/${id}`,
+  },
   admin: {
     deleteUser: (id) => `/admin/users/${id}`,
+    orders: '/admin/orders',
+    updateOrderStatus: (id) => `/admin/orders/${id}/status`,
     updateLock: (id) => `/admin/users/${id}/lock`,
     updateRole: (id) => `/admin/users/${id}/role`,
     users: '/admin/users',
@@ -15,9 +23,12 @@ export const API_ENDPOINTS = {
   auth: {
     adminLogin: '/auth/admin/login',
     changePassword: '/auth/change-password',
+    forgotPassword: '/auth/forgot-password',
     googleLogin: '/oauth2/authorization/google',
     login: '/auth/login',
     register: '/auth/register',
+    resendVerify: '/auth/resend-verify',
+    resetPassword: '/auth/reset-password',
   },
   categories: {
     list: '/categories',

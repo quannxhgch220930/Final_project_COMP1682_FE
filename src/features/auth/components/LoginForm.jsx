@@ -4,6 +4,7 @@ import Input from '../../../shared/ui/Input'
 import { ROUTES } from '../../../shared/constants/routes'
 import { navigateTo } from '../../../shared/lib/navigation'
 import { handleApiError } from '../../../shared/utils/handleApiError'
+import { authClientApi } from '../api/authClient.api'
 import { useAuth } from '../hooks/useAuth'
 
 function LoginForm({
@@ -18,25 +19,34 @@ function LoginForm({
     password: '',
   })
   const [errorMessage, setErrorMessage] = useState('')
+  const [isResendingVerify, setIsResendingVerify] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState('')
+  const [verifyStatus, setVerifyStatus] = useState('')
   const isDarkPortal = theme === 'portal-dark'
   const isLightPortal = theme === 'portal-light'
   const panelClassName = isDarkPortal
-    ? 'border-sky-200/20 bg-slate-900/80'
+    ? 'border-amber-200/18 bg-[rgba(28,21,15,0.9)] shadow-[0_22px_50px_rgba(10,8,5,0.32)]'
     : isLightPortal
       ? 'border-amber-200/70 bg-white/70'
       : 'border-stone-200 bg-white/85'
-  const labelClassName = isDarkPortal ? 'text-slate-100' : 'text-stone-700'
+  const labelClassName = isDarkPortal ? 'text-amber-50' : 'text-stone-700'
   const inputClassName = isDarkPortal
-    ? 'border-sky-200/20 bg-slate-950/70 text-white placeholder:text-slate-400 focus:border-sky-300/40 focus:ring-sky-200/10'
+    ? 'border-amber-200/15 bg-[rgba(19,15,11,0.94)] text-amber-50 placeholder:text-stone-500 focus:border-amber-300/45 focus:ring-amber-200/10'
     : isLightPortal
       ? 'border-amber-200/80 bg-white/85 text-stone-900 placeholder:text-stone-400 focus:border-amber-300 focus:ring-amber-100'
       : ''
   const statusClassName = isDarkPortal
-    ? 'bg-cyan-400/15 text-cyan-100'
+    ? 'bg-amber-300/12 text-amber-100'
     : 'bg-emerald-100 text-emerald-700'
-  const errorClassName = isDarkPortal ? 'text-rose-200' : 'text-rose-600'
+  const errorClassName = isDarkPortal ? 'text-rose-300' : 'text-rose-600'
+  const verifyStatusClassName = isDarkPortal
+    ? 'bg-amber-300/12 text-amber-100'
+    : 'bg-amber-100 text-amber-800'
+  const canResendVerify =
+    !adminOnly &&
+    Boolean(formData.email.trim()) &&
+    /verify|verified|verification|xac thuc|xác thực/i.test(errorMessage)
 
   const handleChange = (field) => (event) => {
     setFormData((currentValue) => ({
@@ -48,6 +58,7 @@ function LoginForm({
   const handleSubmit = async (event) => {
     event.preventDefault()
     setErrorMessage('')
+    setVerifyStatus('')
     setIsSubmitting(true)
 
     try {
@@ -64,6 +75,27 @@ function LoginForm({
       setErrorMessage(handleApiError(error))
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleResendVerify = async () => {
+    const email = formData.email.trim()
+
+    if (!email) {
+      return
+    }
+
+    setErrorMessage('')
+    setVerifyStatus('')
+    setIsResendingVerify(true)
+
+    try {
+      const response = await authClientApi.resendVerify(email)
+      setVerifyStatus(response.message)
+    } catch (error) {
+      setErrorMessage(handleApiError(error))
+    } finally {
+      setIsResendingVerify(false)
     }
   }
 
@@ -112,9 +144,31 @@ function LoginForm({
         </span>
       ) : null}
       {errorMessage ? (
-        <p className={`text-sm ${errorClassName}`}>
-          {errorMessage}
-        </p>
+        <div className="grid gap-3">
+          <p className={`text-sm ${errorClassName}`}>
+            {errorMessage}
+          </p>
+          {canResendVerify ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <p className={`text-sm ${isDarkPortal ? 'text-stone-300' : 'text-stone-600'}`}>
+                This account may still be waiting for email verification.
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isResendingVerify}
+                onClick={handleResendVerify}
+              >
+                {isResendingVerify ? 'Sending...' : 'Resend verification'}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      {verifyStatus ? (
+        <span className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-sm font-medium ${verifyStatusClassName}`}>
+          {verifyStatus}
+        </span>
       ) : null}
     </form>
   )

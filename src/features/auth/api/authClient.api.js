@@ -34,6 +34,16 @@ export const authClientApi = {
       timestamp: response?.timestamp ?? null,
     }
   },
+  forgotPassword: async (payload) => {
+    const response = await httpClient.post(API_ENDPOINTS.auth.forgotPassword, payload)
+
+    return {
+      code: response?.code ?? 200,
+      data: response?.data ?? null,
+      message: response?.message || 'Please check your email to reset password.',
+      timestamp: response?.timestamp ?? null,
+    }
+  },
   getCurrentUser: async () => {
     const response = await httpClient.get(API_ENDPOINTS.users.me)
     return normalizeUserResponse(response?.data)
@@ -61,6 +71,32 @@ export const authClientApi = {
       code: response?.code ?? 200,
       data: response?.data ?? null,
       message: response?.message || 'Register successful. Please verify email.',
+      timestamp: response?.timestamp ?? null,
+    }
+  },
+  resendVerify: async (email) => {
+    const query = new URLSearchParams()
+    query.set('email', email)
+
+    const response = await httpClient.post(
+      `${API_ENDPOINTS.auth.resendVerify}?${query}`,
+      undefined,
+    )
+
+    return {
+      code: response?.code ?? 200,
+      data: response?.data ?? null,
+      message: response?.message || 'Verification email resent successfully.',
+      timestamp: response?.timestamp ?? null,
+    }
+  },
+  resetPassword: async (payload) => {
+    const response = await httpClient.post(API_ENDPOINTS.auth.resetPassword, payload)
+
+    return {
+      code: response?.code ?? 200,
+      data: response?.data ?? null,
+      message: response?.message || 'Password reset successfully.',
       timestamp: response?.timestamp ?? null,
     }
   },

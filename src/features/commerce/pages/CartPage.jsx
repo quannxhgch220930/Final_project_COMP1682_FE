@@ -7,7 +7,8 @@ import { handleApiError } from '../../../shared/utils/handleApiError'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { useCommerce } from '../hooks/useCommerce'
 import { orderApi } from '../api/order.api'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { addressApi } from '../../user/api/address.api'
 
 function CartPage() {
   const {
@@ -26,8 +27,51 @@ function CartPage() {
     receiverName: '',
     receiverPhone: '',
   })
+  const [addresses, setAddresses] = useState([])
+  const [isAddressesLoading, setIsAddressesLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedAddressId, setSelectedAddressId] = useState('')
+
+  useEffect(() => {
+    let mounted = true
+
+    if (!isAuthenticated) {
+      setAddresses([])
+      setSelectedAddressId('')
+      return () => {
+        mounted = false
+      }
+    }
+
+    setIsAddressesLoading(true)
+
+    addressApi
+      .getList()
+      .then((response) => {
+        if (!mounted) {
+          return
+        }
+
+        setAddresses(response.items)
+      })
+      .catch((error) => {
+        if (!mounted) {
+          return
+        }
+
+        setErrorMessage(handleApiError(error))
+      })
+      .finally(() => {
+        if (mounted) {
+          setIsAddressesLoading(false)
+        }
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [isAuthenticated])
 
   const handleCheckout = async () => {
     if (!isAuthenticated) {
@@ -120,9 +164,14 @@ function CartPage() {
                   </h3>
                 </button>
                 <p className="text-sm text-stone-500">{item.product.category}</p>
-                <p className="text-sm text-stone-600">
-                  Unit price: {formatCurrency(item.product.price)}
-                </p>
+                <div className="grid gap-1 text-sm text-stone-600">
+                  <p>Unit price: {formatCurrency(item.unitPrice)}</p>
+                  {item.currentPrice !== item.unitPrice ? (
+                    <p className="text-xs text-amber-700">
+                      Current product price: {formatCurrency(item.currentPrice)}
+                    </p>
+                  ) : null}
+                </div>
               </div>
 
               <div className="grid gap-3">
@@ -167,6 +216,55 @@ function CartPage() {
             </div>
           </div>
           <div className="grid gap-3">
+            {isAuthenticated ? (
+              <div className="grid gap-2">
+                <label className="text-sm font-medium text-stone-700" htmlFor="checkout-address">
+                  Saved address
+                </label>
+                <select
+                  id="checkout-address"
+                  className="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-3 text-stone-900 outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-200"
+                  value={selectedAddressId}
+                  onChange={(event) => {
+                    const nextId = event.target.value
+                    const selectedAddress =
+                      addresses.find((address) => address.id === nextId) || null
+
+                    setSelectedAddressId(nextId)
+
+                    if (!selectedAddress) {
+                      return
+                    }
+
+                    setCheckoutForm((current) => ({
+                      ...current,
+                      receiverAddress:
+                        selectedAddress.fullAddress ||
+                        [
+                          selectedAddress.street,
+                          selectedAddress.ward,
+                          selectedAddress.district,
+                          selectedAddress.province,
+                        ]
+                          .filter(Boolean)
+                          .join(', '),
+                      receiverName: selectedAddress.receiverName,
+                      receiverPhone: selectedAddress.receiverPhone,
+                    }))
+                  }}
+                >
+                  <option value="">Enter address manually</option>
+                  {addresses.map((address) => (
+                    <option key={address.id} value={address.id}>
+                      {`${address.receiverName} - ${address.fullAddress || address.street}`}
+                    </option>
+                  ))}
+                </select>
+                {isAddressesLoading ? (
+                  <p className="text-sm text-stone-500">Loading saved addresses...</p>
+                ) : null}
+              </div>
+            ) : null}
             <Input
               placeholder="Receiver name"
               value={checkoutForm.receiverName}

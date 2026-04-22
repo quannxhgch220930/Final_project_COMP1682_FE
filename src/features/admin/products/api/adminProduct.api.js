@@ -1,46 +1,68 @@
 import { API_ENDPOINTS } from '../../../../shared/constants/api'
 import { httpClient } from '../../../../shared/lib/axios'
-import { normalizeUserResponse } from '../../../user/utils/normalizeUserResponse'
+import {
+  categoryApi,
+  flattenCategories,
+} from '../../../product/api/category.api'
+import { normalizeProductResponse } from '../../../product/utils/normalizeProductResponse'
+
+function normalizeProductPayload(payload) {
+  return {
+    categoryId: Number(payload.categoryId),
+    description: payload.description?.trim() || '',
+    name: payload.name.trim(),
+    price: Number(payload.price),
+    slug: payload.slug.trim(),
+    stock: Number(payload.stock),
+  }
+}
 
 export const adminProductApi = {
-  deleteUser: async (id) => {
-    return httpClient.delete(API_ENDPOINTS.admin.deleteUser(id))
+  createProduct: async (payload) => {
+    const response = await httpClient.post(
+      API_ENDPOINTS.products.list,
+      normalizeProductPayload(payload),
+    )
+
+    return {
+      data: normalizeProductResponse(response?.data),
+      message: response?.message || 'Product created successfully',
+    }
   },
-  getList: async ({ page = 0, size = 10 } = {}) => {
+  deleteProduct: async (id) => {
+    return httpClient.delete(API_ENDPOINTS.products.detail(id))
+  },
+  getCategories: async () => {
+    const categories = await categoryApi.getList()
+    return flattenCategories(categories)
+  },
+  getList: async ({ page = 0, size = 20 } = {}) => {
     const query = new URLSearchParams({
       page: String(page),
       size: String(size),
+      sort: 'newest',
     })
-    const response = await httpClient.get(`${API_ENDPOINTS.admin.users}?${query}`)
+    const response = await httpClient.get(`${API_ENDPOINTS.products.list}?${query}`)
     const pageData = response?.data
-    const users = pageData?.content || pageData?.items || pageData?.data || []
+    const products = pageData?.content || []
 
     return {
-      items: users.map((user) => normalizeUserResponse(user)),
+      items: products.map((product) => normalizeProductResponse(product)),
       page: pageData?.page ?? page,
       size: pageData?.size ?? size,
-      totalElements: pageData?.totalElements ?? users.length,
+      totalElements: pageData?.totalElements ?? products.length,
       totalPages: pageData?.totalPages ?? 1,
     }
   },
-  updateLock: async (id, locked) => {
-    const response = await httpClient.patch(API_ENDPOINTS.admin.updateLock(id), {
-      locked,
-    })
+  updateProduct: async (id, payload) => {
+    const response = await httpClient.put(
+      API_ENDPOINTS.products.detail(id),
+      normalizeProductPayload(payload),
+    )
 
     return {
-      data: normalizeUserResponse(response?.data),
-      message: response?.message || 'User lock status updated successfully',
-    }
-  },
-  updateRole: async (id, role) => {
-    const response = await httpClient.patch(API_ENDPOINTS.admin.updateRole(id), {
-      role,
-    })
-
-    return {
-      data: normalizeUserResponse(response?.data),
-      message: response?.message || 'User role updated successfully',
+      data: normalizeProductResponse(response?.data),
+      message: response?.message || 'Product updated successfully',
     }
   },
 }
