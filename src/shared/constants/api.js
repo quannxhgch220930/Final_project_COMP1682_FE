@@ -8,6 +8,9 @@ export const API_ENDPOINTS = {
   admin: {
     deleteUser: (id) => `/admin/users/${id}`,
     orders: '/admin/orders',
+    productImages: (id) => `/admin/products/${id}/images`,
+    removeProductImage: (imageId) => `/admin/products/images/${imageId}`,
+    updateProductImage: (imageId) => `/admin/products/images/${imageId}`,
     updateOrderStatus: (id) => `/admin/orders/${id}/status`,
     updateLock: (id) => `/admin/users/${id}/lock`,
     updateRole: (id) => `/admin/users/${id}/role`,
@@ -32,6 +35,11 @@ export const API_ENDPOINTS = {
   },
   categories: {
     list: '/categories',
+  },
+  notifications: {
+    list: '/notifications',
+    readAll: '/notifications/read-all',
+    unreadCount: '/notifications/unread-count',
   },
   orders: {
     cancel: (id) => `/orders/${id}/cancel`,

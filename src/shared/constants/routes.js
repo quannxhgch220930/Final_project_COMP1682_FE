@@ -8,6 +8,7 @@ export const ROUTES = {
   forgotPassword: '/forgot-password',
   home: '/',
   login: '/login',
+  notifications: '/notifications',
   oauthCallback: '/oauth2/callback',
   orderDetail: (id) => `/orders/${id}`,
   orders: '/orders',

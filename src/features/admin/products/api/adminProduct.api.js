@@ -32,6 +32,9 @@ export const adminProductApi = {
   deleteProduct: async (id) => {
     return httpClient.delete(API_ENDPOINTS.products.detail(id))
   },
+  deleteProductImage: async (imageId) => {
+    return httpClient.delete(API_ENDPOINTS.admin.removeProductImage(imageId))
+  },
   getCategories: async () => {
     const categories = await categoryApi.getList()
     return flattenCategories(categories)
@@ -63,6 +66,33 @@ export const adminProductApi = {
     return {
       data: normalizeProductResponse(response?.data),
       message: response?.message || 'Product updated successfully',
+    }
+  },
+  updateProductImage: async (imageId, payload) => {
+    const response = await httpClient.patch(
+      API_ENDPOINTS.admin.updateProductImage(imageId),
+      payload,
+    )
+
+    return {
+      data: response?.data ?? null,
+      message: response?.message || 'Product image updated successfully',
+    }
+  },
+  uploadProductImage: async (id, payload) => {
+    const formData = new FormData()
+    formData.append('file', payload.file)
+    formData.append('isPrimary', String(Boolean(payload.isPrimary)))
+    formData.append('sortOrder', String(Number(payload.sortOrder ?? 0)))
+
+    const response = await httpClient.postForm(
+      API_ENDPOINTS.admin.productImages(id),
+      formData,
+    )
+
+    return {
+      data: response?.data ?? null,
+      message: response?.message || 'Product image uploaded successfully',
     }
   },
 }

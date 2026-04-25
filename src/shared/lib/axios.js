@@ -6,8 +6,10 @@ export const API_BASE_URL =
 async function request(path, options = {}) {
   const token = getAccessToken()
   const headers = new Headers(options.headers || {})
+  const isFormDataBody =
+    typeof FormData !== 'undefined' && options.body instanceof FormData
 
-  if (!headers.has('Content-Type') && options.body) {
+  if (!headers.has('Content-Type') && options.body && !isFormDataBody) {
     headers.set('Content-Type', 'application/json')
   }
 
@@ -53,6 +55,12 @@ export const httpClient = {
       ...options,
       body: JSON.stringify(payload),
       method: 'PATCH',
+    }),
+  postForm: (path, formData, options = {}) =>
+    request(path, {
+      ...options,
+      body: formData,
+      method: 'POST',
     }),
   post: (path, payload, options = {}) =>
     request(path, {

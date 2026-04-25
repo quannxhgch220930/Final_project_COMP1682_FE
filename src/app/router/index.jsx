@@ -10,6 +10,7 @@ import CartPage from '../../features/commerce/pages/CartPage'
 import WishlistPage from '../../features/commerce/pages/WishlistPage'
 import OrdersPage from '../../features/commerce/pages/OrdersPage'
 import OrderDetailPage from '../../features/commerce/pages/OrderDetailPage'
+import NotificationsPage from '../../features/notification/pages/NotificationsPage'
 import LoginPage from '../../features/auth/pages/LoginPage'
 import ForgotPasswordPage from '../../features/auth/pages/ForgotPasswordPage'
 import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage'
@@ -24,6 +25,7 @@ import { navigateTo, usePathname } from '../../shared/lib/navigation'
 import { ROUTES } from '../../shared/constants/routes'
 import { ROLES } from '../../shared/constants/roles'
 import { useCommerce } from '../../features/commerce/hooks/useCommerce'
+import { useNotifications } from '../../features/notification/hooks/useNotifications'
 
 function getProductIdFromPath(pathname) {
   if (!pathname.startsWith(`${ROUTES.products}/`)) {
@@ -45,6 +47,7 @@ function AppRouter() {
   const pathname = usePathname()
   const { initialized, isAuthenticated, logout, user } = useAuth()
   const { cartCount, wishlistCount } = useCommerce()
+  const { unreadCount } = useNotifications()
   const isAdmin = user?.role === ROLES.admin
   const productId = getProductIdFromPath(pathname)
   const orderId = getOrderIdFromPath(pathname)
@@ -160,6 +163,20 @@ function AppRouter() {
             loading={!initialized}
           >
             <OrdersPage />
+          </ProtectedRoute>
+        </MainLayout>
+      )
+    }
+
+    if (pathname === ROUTES.notifications) {
+      return (
+        <MainLayout>
+          <ProtectedRoute
+            allowed={isAuthenticated}
+            fallback={<LoginPage />}
+            loading={!initialized}
+          >
+            <NotificationsPage />
           </ProtectedRoute>
         </MainLayout>
       )
@@ -401,6 +418,15 @@ function AppRouter() {
               onClick={() => navigateTo(ROUTES.cart)}
             >
               Cart ({cartCount})
+            </Button>
+          ) : null}
+          {isAuthenticated && !isAdmin ? (
+            <Button
+              type="button"
+              variant={pathname === ROUTES.notifications ? 'primary' : 'secondary'}
+              onClick={() => navigateTo(ROUTES.notifications)}
+            >
+              Notifications ({unreadCount})
             </Button>
           ) : null}
           {isAuthenticated && !isAdmin ? (

@@ -3,10 +3,26 @@ export function normalizeProductResponse(product) {
     return null
   }
 
-  const primaryImage = product.images?.[0]
-  const imageUrls = (product.images || [])
-    .map((image) => image?.imageUrl || image?.url || image?.path || '')
-    .filter(Boolean)
+  const images = [...(product.images || [])]
+    .sort((left, right) => {
+      const leftPrimary = left?.isPrimary ? 1 : 0
+      const rightPrimary = right?.isPrimary ? 1 : 0
+
+      if (leftPrimary !== rightPrimary) {
+        return rightPrimary - leftPrimary
+      }
+
+      return Number(left?.sortOrder ?? 0) - Number(right?.sortOrder ?? 0)
+    })
+    .map((image) => ({
+      id: String(image?.id ?? ''),
+      isPrimary: Boolean(image?.isPrimary),
+      sortOrder: Number(image?.sortOrder ?? 0),
+      url: image?.imageUrl || image?.url || image?.path || '',
+    }))
+
+  const primaryImage = images[0]
+  const imageUrls = images.map((image) => image.url).filter(Boolean)
 
   return {
     ...product,
@@ -19,10 +35,8 @@ export function normalizeProductResponse(product) {
     description: product.description || '',
     id: String(product.id),
     imageUrl:
-      primaryImage?.imageUrl ||
-      primaryImage?.url ||
-      primaryImage?.path ||
-      '',
+      primaryImage?.url || '',
+    images,
     imageUrls,
     isActive: product.isActive ?? true,
     name: product.name || product.productName || 'Unnamed product',

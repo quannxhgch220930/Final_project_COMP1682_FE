@@ -16,6 +16,21 @@ function createInitialFormValues() {
   }
 }
 
+function createInitialImageFormValues() {
+  return {
+    file: null,
+    isPrimary: false,
+    sortOrder: '0',
+  }
+}
+
+function createImageDraft(image) {
+  return {
+    isPrimary: Boolean(image?.isPrimary),
+    sortOrder: String(image?.sortOrder ?? 0),
+  }
+}
+
 function slugify(value) {
   return value
     .toLowerCase()
@@ -57,8 +72,11 @@ function AdminProductsPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [formErrors, setFormErrors] = useState({})
   const [formValues, setFormValues] = useState(createInitialFormValues)
+  const [imageDrafts, setImageDrafts] = useState({})
+  const [imageFormValues, setImageFormValues] = useState(createInitialImageFormValues)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isImageSubmitting, setIsImageSubmitting] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [pageState, setPageState] = useState({
     page: 0,
@@ -91,8 +109,10 @@ function AdminProductsPage() {
           totalPages: response.totalPages,
         })
         setErrorMessage('')
+        return response.items
       } catch (error) {
         setErrorMessage(handleApiError(error))
+        return []
       } finally {
         setIsLoading(false)
       }
@@ -116,6 +136,7 @@ function AdminProductsPage() {
   const closeForm = () => {
     setFormErrors({})
     setFormValues(createInitialFormValues())
+    setImageFormValues(createInitialImageFormValues())
     setIsFormOpen(false)
     setSelectedProduct(null)
   }
@@ -123,6 +144,7 @@ function AdminProductsPage() {
   const openCreateForm = () => {
     setFormErrors({})
     setFormValues(createInitialFormValues())
+    setImageFormValues(createInitialImageFormValues())
     setIsFormOpen(true)
     setSelectedProduct(null)
   }
@@ -138,6 +160,12 @@ function AdminProductsPage() {
       stock: String(product.stock ?? 0),
     })
     setIsFormOpen(true)
+    setImageFormValues(createInitialImageFormValues())
+    setImageDrafts(
+      Object.fromEntries(
+        (product.images || []).map((image) => [image.id, createImageDraft(image)]),
+      ),
+    )
     setSelectedProduct(product)
   }
 
@@ -190,6 +218,40 @@ function AdminProductsPage() {
     }))
   }
 
+  const handleImageFormChange = (field) => (event) => {
+    const nextValue =
+      field === 'file'
+        ? event.target.files?.[0] || null
+        : field === 'isPrimary'
+          ? event.target.checked
+          : event.target.value
+
+    setImageFormValues((current) => ({
+      ...current,
+      [field]: nextValue,
+    }))
+  }
+
+  const syncSelectedProduct = async (productId, page = pageState.page) => {
+    const nextProducts = await loadProducts(page)
+    const nextSelectedProduct =
+      nextProducts.find((product) => product.id === String(productId)) || null
+
+    if (nextSelectedProduct) {
+      setSelectedProduct(nextSelectedProduct)
+      setImageDrafts(
+        Object.fromEntries(
+          (nextSelectedProduct.images || []).map((image) => [
+            image.id,
+            createImageDraft(image),
+          ]),
+        ),
+      )
+    }
+
+    return nextSelectedProduct
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -216,6 +278,90 @@ function AdminProductsPage() {
       setErrorMessage(handleApiError(error))
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleImageUpload = async (event) => {
+    event.preventDefault()
+
+    if (!selectedProduct?.id) {
+      return
+    }
+
+    if (!imageFormValues.file) {
+      setErrorMessage('Please choose an image file to upload')
+      return
+    }
+
+    setErrorMessage('')
+    setIsImageSubmitting(true)
+
+    try {
+      await adminProductApi.uploadProductImage(selectedProduct.id, imageFormValues)
+      await syncSelectedProduct(selectedProduct.id)
+      setImageFormValues(createInitialImageFormValues())
+    } catch (error) {
+      setErrorMessage(handleApiError(error))
+    } finally {
+      setIsImageSubmitting(false)
+    }
+  }
+
+  const handleDeleteImage = async (image) => {
+    if (!selectedProduct?.id) {
+      return
+    }
+
+    const confirmed = window.confirm('Delete this product image?')
+
+    if (!confirmed) {
+      return
+    }
+
+    setErrorMessage('')
+    setIsImageSubmitting(true)
+
+    try {
+      await adminProductApi.deleteProductImage(image.id)
+      await syncSelectedProduct(selectedProduct.id)
+    } catch (error) {
+      setErrorMessage(handleApiError(error))
+    } finally {
+      setIsImageSubmitting(false)
+    }
+  }
+
+  const handleImageDraftChange = (imageId, field) => (event) => {
+    const nextValue = field === 'isPrimary' ? event.target.checked : event.target.value
+
+    setImageDrafts((current) => ({
+      ...current,
+      [imageId]: {
+        ...(current[imageId] || {}),
+        [field]: nextValue,
+      },
+    }))
+  }
+
+  const handleUpdateImage = async (image) => {
+    if (!selectedProduct?.id) {
+      return
+    }
+
+    const draft = imageDrafts[image.id] || createImageDraft(image)
+    setErrorMessage('')
+    setIsImageSubmitting(true)
+
+    try {
+      await adminProductApi.updateProductImage(image.id, {
+        isPrimary: Boolean(draft.isPrimary),
+        sortOrder: Number(draft.sortOrder ?? 0),
+      })
+      await syncSelectedProduct(selectedProduct.id)
+    } catch (error) {
+      setErrorMessage(handleApiError(error))
+    } finally {
+      setIsImageSubmitting(false)
     }
   }
 
@@ -371,6 +517,132 @@ function AdminProductsPage() {
             </Button>
           </div>
         </form>
+      ) : null}
+
+      {isFormOpen && selectedProduct ? (
+        <section className="grid gap-4 rounded-[24px] border border-amber-200/15 bg-[rgba(25,19,14,0.9)] p-5 shadow-[0_22px_60px_rgba(10,8,5,0.32)]">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-100/70">
+              Product images
+            </p>
+            <h3 className="text-2xl font-semibold text-stone-50">
+              {selectedProduct.name}
+            </h3>
+            <p className="mt-2 text-sm text-stone-300">
+              Upload and manage Cloudinary product images for this product.
+            </p>
+          </div>
+
+          <form className="grid gap-4 md:grid-cols-[minmax(0,1fr)_120px_140px_auto]" onSubmit={handleImageUpload}>
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-amber-50" htmlFor="admin-product-image-file">
+                Image file
+              </label>
+              <Input
+                id="admin-product-image-file"
+                className="border-amber-200/15 bg-[rgba(19,15,11,0.94)] text-amber-50 file:mr-3 file:rounded-full file:border-0 file:bg-amber-200 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-stone-950"
+                type="file"
+                accept="image/*"
+                onChange={handleImageFormChange('file')}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-amber-50" htmlFor="admin-product-image-sort-order">
+                Sort order
+              </label>
+              <Input
+                id="admin-product-image-sort-order"
+                className="border-amber-200/15 bg-[rgba(19,15,11,0.94)] text-amber-50 placeholder:text-stone-500 focus:border-amber-300/45 focus:ring-amber-200/10"
+                min="0"
+                type="number"
+                value={imageFormValues.sortOrder}
+                onChange={handleImageFormChange('sortOrder')}
+              />
+            </div>
+
+            <label className="mt-7 inline-flex items-center gap-3 text-sm text-stone-200">
+              <input
+                type="checkbox"
+                checked={imageFormValues.isPrimary}
+                onChange={handleImageFormChange('isPrimary')}
+              />
+              Primary
+            </label>
+
+            <div className="mt-6">
+              <Button type="submit" disabled={isImageSubmitting}>
+                {isImageSubmitting ? 'Uploading...' : 'Upload image'}
+              </Button>
+            </div>
+          </form>
+
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {selectedProduct.images?.length ? (
+              selectedProduct.images.map((image) => (
+                <article
+                  key={image.id}
+                  className="grid gap-3 rounded-2xl border border-amber-200/15 bg-[rgba(19,15,11,0.94)] p-4"
+                >
+                  <img
+                    className="aspect-[4/3] w-full rounded-xl object-cover"
+                    src={image.url}
+                    alt={`${selectedProduct.name} image`}
+                  />
+                  <div className="grid gap-3">
+                    <label className="inline-flex items-center gap-3 text-sm text-stone-200">
+                      <input
+                        type="checkbox"
+                        checked={
+                          imageDrafts[image.id]?.isPrimary ?? Boolean(image.isPrimary)
+                        }
+                        onChange={handleImageDraftChange(image.id, 'isPrimary')}
+                      />
+                      Primary image
+                    </label>
+                    <div className="grid gap-2">
+                      <label
+                        className="text-sm font-medium text-stone-200"
+                        htmlFor={`product-image-sort-order-${image.id}`}
+                      >
+                        Sort order
+                      </label>
+                      <Input
+                        id={`product-image-sort-order-${image.id}`}
+                        className="border-amber-200/15 bg-[rgba(31,24,18,0.88)] text-amber-50 placeholder:text-stone-500 focus:border-amber-300/45 focus:ring-amber-200/10"
+                        min="0"
+                        type="number"
+                        value={imageDrafts[image.id]?.sortOrder ?? String(image.sortOrder)}
+                        onChange={handleImageDraftChange(image.id, 'sortOrder')}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button
+                      type="button"
+                      disabled={isImageSubmitting}
+                      onClick={() => handleUpdateImage(image)}
+                    >
+                      Save image
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={isImageSubmitting}
+                      onClick={() => handleDeleteImage(image)}
+                    >
+                      Delete image
+                    </Button>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-amber-200/15 bg-[rgba(19,15,11,0.72)] p-5 text-sm text-stone-400">
+                No images uploaded for this product yet.
+              </div>
+            )}
+          </div>
+        </section>
       ) : null}
 
       {errorMessage ? <p className="text-sm text-rose-300">{errorMessage}</p> : null}

@@ -14,7 +14,7 @@ function ForgotPasswordPage() {
           Forgot your password?
         </h2>
         <p className="mt-2 text-sm text-stone-600">
-          Enter your email and the backend will send a password reset instruction.
+          Enter your email and we will send for reset  password.
         </p>
       </div>
 
