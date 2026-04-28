@@ -1,14 +1,15 @@
 import { useEffect, useEffectEvent, useState } from 'react'
-import ChangePasswordForm from '../../auth/components/ChangePasswordForm'
-import AddressBook from '../components/AddressBook'
-import ProfileForm from '../components/ProfileForm'
+import { Alert, Card, Typography } from 'antd'
 import { useProfile } from '../hooks/useProfile'
-import { formatDate } from '../../../shared/utils/formatDate'
 import { handleApiError } from '../../../shared/utils/handleApiError'
 import { useAuth } from '../../auth/hooks/useAuth'
+import { navigateTo } from '../../../shared/lib/navigation'
+import { ROUTES } from '../../../shared/constants/routes'
+
+const { Paragraph, Title } = Typography
 
 function ProfilePage() {
-  const { getProfile, updateProfile, user } = useProfile()
+  const { getProfile, user } = useProfile()
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const { logout } = useAuth()
@@ -46,62 +47,73 @@ function ProfilePage() {
   }, [])
 
   if (isLoading) {
-    return <p className="text-sm text-stone-500">Loading profile...</p>
+    return <Alert type="info" message="Loading profile..." showIcon />
   }
 
   if (errorMessage) {
-    return <p className="text-sm text-rose-600">{errorMessage}</p>
+    return <Alert type="error" message={errorMessage} showIcon />
   }
 
   return (
     <section className="grid gap-6">
       <div>
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-          My Account
+          Account
         </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
-          {user?.fullName || 'Profile'}
-        </h2>
-        <p className="mt-2 text-sm text-stone-600">
-          {user?.email || 'No email'} | {user?.role || 'USER'}
-        </p>
+        <Title level={2} style={{ margin: 0 }}>
+          Your profile dashboard
+        </Title>
+        <Paragraph className="mt-2 text-sm text-stone-600">
+          Choose one of the actions below to manage your account.
+        </Paragraph>
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-stone-200 bg-white/85 p-6 text-sm text-stone-700 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur">
-        <p>
-          <strong>Verified:</strong> {user?.isVerified ? 'Yes' : 'No'}
-        </p>
-        <p>
-          <strong>Locked:</strong> {user?.isLocked ? 'Yes' : 'No'}
-        </p>
-        <p>
-          <strong>Provider:</strong> {user?.provider || 'LOCAL'}
-        </p>
-        <p>
-          <strong>Created at:</strong>{' '}
-          {user?.createdAt ? formatDate(user.createdAt) : 'N/A'}
-        </p>
-      </div>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card
+          className="cursor-pointer border-stone-200 shadow-sm transition hover:border-stone-300 hover:shadow-md"
+          onClick={() => navigateTo(ROUTES.profileEdit)}
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+            Personal information
+          </p>
+          <Title level={4} className="mt-3">
+            Edit profile
+          </Title>
+          <Paragraph className="mt-2 text-sm text-stone-600">
+            Update your name, email, phone number and date of birth.
+          </Paragraph>
+        </Card>
 
-      <ProfileForm initialValues={user} onSubmit={updateProfile} />
+        <Card
+          className="cursor-pointer border-stone-200 shadow-sm transition hover:border-stone-300 hover:shadow-md"
+          onClick={() => navigateTo(ROUTES.profileAddress)}
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+            Shipping address
+          </p>
+          <Title level={4} className="mt-3">
+            Manage addresses
+          </Title>
+          <Paragraph className="mt-2 text-sm text-stone-600">
+            Add or edit your saved delivery addresses.
+          </Paragraph>
+        </Card>
 
-      <AddressBook />
-
-      <section className="grid gap-5">
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+        <Card
+          className="cursor-pointer border-stone-200 shadow-sm transition hover:border-stone-300 hover:shadow-md"
+          onClick={() => navigateTo(ROUTES.profilePassword)}
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
             Security
           </p>
-          <h3 className="text-2xl font-semibold tracking-tight text-stone-900">
+          <Title level={4} className="mt-3">
             Change password
-          </h3>
-          <p className="mt-2 text-sm text-stone-600">
-            This action requires your current password.
-          </p>
-        </div>
-
-        <ChangePasswordForm />
-      </section>
+          </Title>
+          <Paragraph className="mt-2 text-sm text-stone-600">
+            Secure your account by updating your password.
+          </Paragraph>
+        </Card>
+      </div>
     </section>
   )
 }

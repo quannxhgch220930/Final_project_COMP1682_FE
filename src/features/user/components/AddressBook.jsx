@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Alert, Card, Typography } from 'antd'
 import Button from '../../../shared/ui/Button'
 import Input from '../../../shared/ui/Input'
 import { handleApiError } from '../../../shared/utils/handleApiError'
 import { addressApi } from '../api/address.api'
+
+const { Paragraph, Title } = Typography
 
 function createInitialFormValues() {
   return {
@@ -213,13 +216,13 @@ function AddressBook() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-            Address book
+            Shipping address
           </p>
           <h3 className="text-2xl font-semibold tracking-tight text-stone-900">
-            Saved delivery addresses
+            Saved shipping addresses
           </h3>
           <p className="mt-2 text-sm text-stone-600">
-            Manage your delivery addresses without relying on a default address.
+            Manage your shipping addresses for faster checkout.
           </p>
         </div>
 
@@ -230,132 +233,132 @@ function AddressBook() {
 
       {isFormOpen ? (
         <form
-          className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-6 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur"
+          className="grid gap-4"
           onSubmit={handleSubmit}
         >
-          <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-              {formTitle}
-            </p>
-            <h4 className="text-xl font-semibold text-stone-900">
-              {selectedAddress ? selectedAddress.receiverName : 'New address'}
-            </h4>
-          </div>
+          <Card styles={{ body: { padding: 24 } }}>
+            <div className="grid gap-4">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                  {formTitle}
+                </p>
+                <h4 className="text-xl font-semibold text-stone-900">
+                  {selectedAddress ? selectedAddress.receiverName : 'New address'}
+                </h4>
+              </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-stone-700" htmlFor="address-receiver-name">
-                Receiver name
-              </label>
-              <Input
-                id="address-receiver-name"
-                value={formValues.receiverName}
-                onChange={handleChange('receiverName')}
-                placeholder="Nguyen Van A"
-              />
-              {formErrors.receiverName ? (
-                <p className="text-sm text-rose-600">{formErrors.receiverName}</p>
-              ) : null}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium text-stone-700" htmlFor="address-receiver-name">
+                    Receiver name
+                  </label>
+                  <Input
+                    id="address-receiver-name"
+                    value={formValues.receiverName}
+                    onChange={handleChange('receiverName')}
+                    placeholder="Nguyen Van A"
+                  />
+                  {formErrors.receiverName ? (
+                    <p className="text-sm text-rose-600">{formErrors.receiverName}</p>
+                  ) : null}
+                </div>
+
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium text-stone-700" htmlFor="address-receiver-phone">
+                    Receiver phone
+                  </label>
+                  <Input
+                    id="address-receiver-phone"
+                    value={formValues.receiverPhone}
+                    onChange={handleChange('receiverPhone')}
+                    placeholder="0912345678"
+                  />
+                  {formErrors.receiverPhone ? (
+                    <p className="text-sm text-rose-600">{formErrors.receiverPhone}</p>
+                  ) : null}
+                </div>
+
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium text-stone-700" htmlFor="address-province">
+                    Province
+                  </label>
+                  <Input
+                    id="address-province"
+                    value={formValues.province}
+                    onChange={handleChange('province')}
+                    placeholder="Ho Chi Minh City"
+                  />
+                  {formErrors.province ? (
+                    <p className="text-sm text-rose-600">{formErrors.province}</p>
+                  ) : null}
+                </div>
+
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium text-stone-700" htmlFor="address-district">
+                    District
+                  </label>
+                  <Input
+                    id="address-district"
+                    value={formValues.district}
+                    onChange={handleChange('district')}
+                    placeholder="District 1"
+                  />
+                  {formErrors.district ? (
+                    <p className="text-sm text-rose-600">{formErrors.district}</p>
+                  ) : null}
+                </div>
+
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium text-stone-700" htmlFor="address-ward">
+                    Ward
+                  </label>
+                  <Input
+                    id="address-ward"
+                    value={formValues.ward}
+                    onChange={handleChange('ward')}
+                    placeholder="Ben Nghe"
+                  />
+                  {formErrors.ward ? (
+                    <p className="text-sm text-rose-600">{formErrors.ward}</p>
+                  ) : null}
+                </div>
+
+                <div className="grid gap-2 md:col-span-2">
+                  <label className="text-sm font-medium text-stone-700" htmlFor="address-street">
+                    Street
+                  </label>
+                  <Input
+                    id="address-street"
+                    value={formValues.street}
+                    onChange={handleChange('street')}
+                    placeholder="123 Nguyen Hue"
+                  />
+                  {formErrors.street ? (
+                    <p className="text-sm text-rose-600">{formErrors.street}</p>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? 'Saving...'
+                    : selectedAddress
+                      ? 'Update address'
+                      : 'Save address'}
+                </Button>
+                <Button type="button" variant="secondary" onClick={resetForm}>
+                  Cancel
+                </Button>
+              </div>
             </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-stone-700" htmlFor="address-receiver-phone">
-                Receiver phone
-              </label>
-              <Input
-                id="address-receiver-phone"
-                value={formValues.receiverPhone}
-                onChange={handleChange('receiverPhone')}
-                placeholder="0912345678"
-              />
-              {formErrors.receiverPhone ? (
-                <p className="text-sm text-rose-600">{formErrors.receiverPhone}</p>
-              ) : null}
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-stone-700" htmlFor="address-province">
-                Province
-              </label>
-              <Input
-                id="address-province"
-                value={formValues.province}
-                onChange={handleChange('province')}
-                placeholder="Ho Chi Minh City"
-              />
-              {formErrors.province ? (
-                <p className="text-sm text-rose-600">{formErrors.province}</p>
-              ) : null}
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-stone-700" htmlFor="address-district">
-                District
-              </label>
-              <Input
-                id="address-district"
-                value={formValues.district}
-                onChange={handleChange('district')}
-                placeholder="District 1"
-              />
-              {formErrors.district ? (
-                <p className="text-sm text-rose-600">{formErrors.district}</p>
-              ) : null}
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-stone-700" htmlFor="address-ward">
-                Ward
-              </label>
-              <Input
-                id="address-ward"
-                value={formValues.ward}
-                onChange={handleChange('ward')}
-                placeholder="Ben Nghe"
-              />
-              {formErrors.ward ? (
-                <p className="text-sm text-rose-600">{formErrors.ward}</p>
-              ) : null}
-            </div>
-
-            <div className="grid gap-2 md:col-span-2">
-              <label className="text-sm font-medium text-stone-700" htmlFor="address-street">
-                Street
-              </label>
-              <Input
-                id="address-street"
-                value={formValues.street}
-                onChange={handleChange('street')}
-                placeholder="123 Nguyen Hue"
-              />
-              {formErrors.street ? (
-                <p className="text-sm text-rose-600">{formErrors.street}</p>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? 'Saving...'
-                : selectedAddress
-                  ? 'Update address'
-                  : 'Save address'}
-            </Button>
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel
-            </Button>
-          </div>
+          </Card>
         </form>
       ) : null}
 
-      {status ? (
-        <span className="inline-flex w-fit items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
-          {status}
-        </span>
-      ) : null}
-      {errorMessage ? <p className="text-sm text-rose-600">{errorMessage}</p> : null}
-      {isLoading ? <p className="text-sm text-stone-500">Loading addresses...</p> : null}
+      {status ? <Alert type="success" message={status} showIcon /> : null}
+      {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
+      {isLoading ? <Alert type="info" message="Loading addresses..." showIcon /> : null}
 
       <div className="grid gap-4">
         {addresses.length > 0 ? (
@@ -363,21 +366,21 @@ function AddressBook() {
             const isBusy = actionAddressId === address.id
 
             return (
-              <article
+              <Card
                 key={address.id}
-                className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur"
+                className="shadow-[0_20px_45px_rgba(63,39,18,0.08)]"
               >
                 <div className="grid gap-2">
-                  <h4 className="text-lg font-semibold text-stone-900">
+                  <Title level={4} style={{ margin: 0 }}>
                     {address.receiverName}
-                  </h4>
-                  <p className="text-sm text-stone-600">{address.receiverPhone}</p>
-                  <p className="text-sm text-stone-700">
+                  </Title>
+                  <Paragraph className="!mb-0 text-sm !text-stone-600">{address.receiverPhone}</Paragraph>
+                  <Paragraph className="!mb-0 text-sm !text-stone-700">
                     {address.fullAddress ||
                       [address.street, address.ward, address.district, address.province]
                         .filter(Boolean)
                         .join(', ')}
-                  </p>
+                  </Paragraph>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
@@ -397,13 +400,11 @@ function AddressBook() {
                     Delete
                   </Button>
                 </div>
-              </article>
+              </Card>
             )
           })
         ) : (
-          <div className="rounded-2xl border border-dashed border-stone-300 bg-white/65 p-5 text-sm text-stone-600">
-            No saved addresses yet.
-          </div>
+          <Alert type="info" message="No saved addresses yet." showIcon />
         )}
       </div>
     </section>

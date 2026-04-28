@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Alert, Card, Descriptions, Tag, Timeline, Typography } from 'antd'
 import Button from '../../../shared/ui/Button'
 import { ROUTES } from '../../../shared/constants/routes'
 import { navigateTo } from '../../../shared/lib/navigation'
@@ -6,6 +7,8 @@ import { formatCurrency } from '../../../shared/utils/formatCurrency'
 import { formatDate } from '../../../shared/utils/formatDate'
 import { handleApiError } from '../../../shared/utils/handleApiError'
 import { orderApi } from '../api/order.api'
+
+const { Paragraph, Title } = Typography
 
 const CANCELLABLE_STATUSES = new Set(['PENDING', 'CONFIRMED'])
 
@@ -61,13 +64,13 @@ function OrderDetailPage({ orderId }) {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-stone-500">Loading order details...</p>
+    return <Alert type="info" message="Loading order details..." showIcon />
   }
 
   if (errorMessage && !order) {
     return (
       <section className="grid gap-4">
-        <p className="text-sm text-rose-600">{errorMessage}</p>
+        <Alert type="error" message={errorMessage} showIcon />
         <div>
           <Button type="button" variant="secondary" onClick={() => navigateTo(ROUTES.orders)}>
             Back to orders
@@ -80,7 +83,7 @@ function OrderDetailPage({ orderId }) {
   if (!order) {
     return (
       <section className="grid gap-4">
-        <p className="text-sm text-stone-500">Order not found.</p>
+        <Alert type="info" message="Order not found." showIcon />
         <div>
           <Button type="button" variant="secondary" onClick={() => navigateTo(ROUTES.orders)}>
             Back to orders
@@ -113,14 +116,14 @@ function OrderDetailPage({ orderId }) {
         <p className="mt-2 text-sm text-stone-600">{formatDate(order.createdAt)}</p>
       </div>
 
-      {errorMessage ? <p className="text-sm text-rose-600">{errorMessage}</p> : null}
+      {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_320px]">
         <div className="grid gap-4">
           {order.items.map((item) => (
-            <article
+            <Card
               key={item.id || item.productId}
-              className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur md:grid-cols-[96px_minmax(0,1fr)_140px]"
+              className="grid gap-4 shadow-[0_20px_45px_rgba(63,39,18,0.08)] md:grid-cols-[96px_minmax(0,1fr)_140px]"
             >
               {item.product.imageUrl ? (
                 <img
@@ -140,9 +143,7 @@ function OrderDetailPage({ orderId }) {
                   className="w-fit text-left"
                   onClick={() => navigateTo(ROUTES.productDetail(item.productId))}
                 >
-                  <h3 className="text-lg font-semibold text-stone-900">
-                    {item.product.name}
-                  </h3>
+                  <Title level={4} style={{ margin: 0 }}>{item.product.name}</Title>
                 </button>
                 <p className="text-sm text-stone-500">{item.product.category}</p>
               </div>
@@ -154,11 +155,11 @@ function OrderDetailPage({ orderId }) {
                   {formatCurrency(item.lineTotal)}
                 </p>
               </div>
-            </article>
+            </Card>
           ))}
 
           {order.statusLogs.length > 0 ? (
-            <section className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur">
+            <Card>
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
                   Status history
@@ -168,82 +169,36 @@ function OrderDetailPage({ orderId }) {
                 </h3>
               </div>
 
-              <div className="grid gap-3">
-                {order.statusLogs.map((log, index) => (
-                  <div
-                    key={`${log.status}-${log.changedAt || index}`}
-                    className="grid gap-1 rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <strong className="text-sm uppercase tracking-[0.14em] text-stone-900">
-                        {log.status}
-                      </strong>
+              <Timeline
+                items={order.statusLogs.map((log, index) => ({
+                  children: (
+                    <div key={`${log.status}-${log.changedAt || index}`} className="grid gap-1">
+                      <Tag color="gold">{log.status}</Tag>
                       <span className="text-xs text-stone-500">
                         {log.changedAt ? formatDate(log.changedAt) : 'N/A'}
                       </span>
+                      {log.changedBy ? <Paragraph className="!mb-0 text-sm text-stone-600">Changed by: {log.changedBy}</Paragraph> : null}
+                      {log.note ? <Paragraph className="!mb-0 text-sm text-stone-600">{log.note}</Paragraph> : null}
                     </div>
-                    {log.changedBy ? (
-                      <p className="text-sm text-stone-600">
-                        Changed by: {log.changedBy}
-                      </p>
-                    ) : null}
-                    {log.note ? <p className="text-sm text-stone-600">{log.note}</p> : null}
-                  </div>
-                ))}
-              </div>
-            </section>
+                  ),
+                }))}
+              />
+            </Card>
           ) : null}
         </div>
 
-        <aside className="grid gap-3 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm text-stone-500">Items</span>
-            <strong className="text-stone-900">{order.totalQuantity}</strong>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm text-stone-500">Subtotal</span>
-            <strong className="text-stone-900">{formatCurrency(order.subtotal)}</strong>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm text-stone-500">Discount</span>
-            <strong className="text-stone-900">
-              {formatCurrency(order.discountAmount)}
-            </strong>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm text-stone-500">Total</span>
-            <strong className="text-stone-900">{formatCurrency(order.total)}</strong>
-          </div>
-          {order.shippingName ? (
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-stone-500">Receiver</span>
-              <strong className="text-stone-900">{order.shippingName}</strong>
-            </div>
-          ) : null}
-          {order.shippingPhone ? (
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-stone-500">Phone</span>
-              <strong className="text-stone-900">{order.shippingPhone}</strong>
-            </div>
-          ) : null}
-          {order.shippingAddress ? (
-            <div className="grid gap-1">
-              <span className="text-sm text-stone-500">Address</span>
-              <strong className="text-stone-900">{order.shippingAddress}</strong>
-            </div>
-          ) : null}
-          {order.note ? (
-            <div className="grid gap-1">
-              <span className="text-sm text-stone-500">Note</span>
-              <strong className="text-stone-900">{order.note}</strong>
-            </div>
-          ) : null}
-          {order.couponCode ? (
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-stone-500">Coupon</span>
-              <strong className="text-stone-900">{order.couponCode}</strong>
-            </div>
-          ) : null}
+        <Card>
+          <Descriptions column={1} title="Order summary">
+            <Descriptions.Item label="Items">{order.totalQuantity}</Descriptions.Item>
+            <Descriptions.Item label="Subtotal">{formatCurrency(order.subtotal)}</Descriptions.Item>
+            <Descriptions.Item label="Discount">{formatCurrency(order.discountAmount)}</Descriptions.Item>
+            <Descriptions.Item label="Total">{formatCurrency(order.total)}</Descriptions.Item>
+            {order.shippingName ? <Descriptions.Item label="Receiver">{order.shippingName}</Descriptions.Item> : null}
+            {order.shippingPhone ? <Descriptions.Item label="Phone">{order.shippingPhone}</Descriptions.Item> : null}
+            {order.shippingAddress ? <Descriptions.Item label="Address">{order.shippingAddress}</Descriptions.Item> : null}
+            {order.note ? <Descriptions.Item label="Note">{order.note}</Descriptions.Item> : null}
+            {order.couponCode ? <Descriptions.Item label="Coupon">{order.couponCode}</Descriptions.Item> : null}
+          </Descriptions>
           <div className="pt-2">
             <Button
               type="button"
@@ -254,12 +209,15 @@ function OrderDetailPage({ orderId }) {
               {isSubmitting ? 'Cancelling...' : 'Cancel order'}
             </Button>
             {!canCancel ? (
-              <p className="mt-2 text-sm text-stone-500">
-                Orders can only be cancelled while they are pending or confirmed.
-              </p>
+              <Alert
+                className="mt-3"
+                type="info"
+                message="Orders can only be cancelled while they are pending or confirmed."
+                showIcon
+              />
             ) : null}
           </div>
-        </aside>
+        </Card>
       </div>
     </section>
   )

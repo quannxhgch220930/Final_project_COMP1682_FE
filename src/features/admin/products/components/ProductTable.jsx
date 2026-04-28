@@ -1,3 +1,4 @@
+import { Tag } from 'antd'
 import Table from '../../../../shared/ui/Table'
 import Button from '../../../../shared/ui/Button'
 import { formatCurrency } from '../../../../shared/utils/formatCurrency'
@@ -15,7 +16,7 @@ function createColumns({ actionProductId, onDelete, onEdit }) {
     {
       key: 'isActive',
       label: 'Status',
-      render: (product) => (product.isActive ? 'Active' : 'Inactive'),
+      render: (product) => <Tag color={product.isActive ? 'green' : 'default'}>{product.isActive ? 'Active' : 'Inactive'}</Tag>,
     },
     {
       key: 'actions',

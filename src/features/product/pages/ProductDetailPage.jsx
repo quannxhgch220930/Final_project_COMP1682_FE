@@ -108,11 +108,11 @@ function ProductDetailPage({ productId }) {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_420px] lg:items-start">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_430px] lg:items-start">
         <div className="grid gap-4">
           {activeImageUrl ? (
             <img
-              className="aspect-[4/3] w-full rounded-[32px] border border-stone-200 bg-stone-50 object-cover shadow-[0_20px_45px_rgba(63,39,18,0.08)]"
+              className="aspect-[4/3] w-full rounded-[34px] border border-stone-200 bg-stone-50 object-cover shadow-[0_24px_55px_rgba(63,39,18,0.1)]"
               src={activeImageUrl}
               alt={product.name}
             />
@@ -156,7 +156,7 @@ function ProductDetailPage({ productId }) {
           ) : null}
         </div>
 
-        <div className="grid gap-5 rounded-[32px] border border-stone-200 bg-white/78 p-6 shadow-[0_24px_55px_rgba(63,39,18,0.08)] backdrop-blur">
+        <div className="grid gap-6 rounded-[34px] border border-stone-200 bg-[rgba(255,251,245,0.92)] p-7 shadow-[0_26px_60px_rgba(63,39,18,0.1)] backdrop-blur">
           <div className="grid gap-4 border-b border-stone-200 pb-5">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-500">
@@ -172,7 +172,7 @@ function ProductDetailPage({ productId }) {
                 {product.isActive ? 'Active' : 'Inactive'}
               </span>
             </div>
-            <div className="grid gap-3">
+            <div className="grid gap-4">
               <h2 className="text-4xl font-semibold tracking-tight text-stone-900">
                 {product.name}
               </h2>
@@ -180,19 +180,7 @@ function ProductDetailPage({ productId }) {
                 {formatCurrency(product.price)}
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.14em] text-stone-500">Rating</p>
-                <strong className="mt-1 block text-lg text-stone-900">
-                  {product.ratingAvg.toFixed(1)}
-                </strong>
-              </div>
-              <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.14em] text-stone-500">Reviews</p>
-                <strong className="mt-1 block text-lg text-stone-900">
-                  {product.ratingCount}
-                </strong>
-              </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3">
                 <p className="text-xs uppercase tracking-[0.14em] text-stone-500">Stock</p>
                 <strong className="mt-1 block text-lg text-stone-900">
@@ -205,7 +193,7 @@ function ProductDetailPage({ productId }) {
           <div className="flex flex-wrap gap-3">
             <Button
               type="button"
-              className="min-w-[160px]"
+              className="min-w-[180px]"
               onClick={() => requireAuth(() => addCartItem(product))}
             >
               Add to cart
@@ -220,7 +208,7 @@ function ProductDetailPage({ productId }) {
             </Button>
           </div>
 
-          <div className="grid gap-3 rounded-[28px] border border-stone-200 bg-stone-50/70 p-5">
+          <div className="grid gap-3 rounded-[30px] border border-stone-200 bg-white p-5">
             <div className="flex items-center justify-between gap-4">
               <span className="text-sm text-stone-500">Category</span>
               <strong className="text-stone-900">{product.category}</strong>
@@ -228,12 +216,6 @@ function ProductDetailPage({ productId }) {
             <div className="flex items-center justify-between gap-4">
               <span className="text-sm text-stone-500">Stock</span>
               <strong className="text-stone-900">{product.stock}</strong>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-stone-500">Rating</span>
-              <strong className="text-stone-900">
-                {product.ratingAvg.toFixed(1)} / 5 ({product.ratingCount})
-              </strong>
             </div>
             {product.slug ? (
               <div className="flex items-center justify-between gap-4">

@@ -1,3 +1,4 @@
+import { Tag } from 'antd'
 import Table from '../../../../shared/ui/Table'
 import Button from '../../../../shared/ui/Button'
 import { ROLES } from '../../../../shared/constants/roles'
@@ -6,16 +7,20 @@ function createColumns({ actionUserId, onDelete, onToggleLock, onToggleRole }) {
   return [
     { key: 'fullName', label: 'Full name' },
     { key: 'email', label: 'Email' },
-    { key: 'role', label: 'Role' },
+    {
+      key: 'role',
+      label: 'Role',
+      render: (user) => <Tag color={user.role === ROLES.admin ? 'gold' : 'default'}>{user.role}</Tag>,
+    },
     {
       key: 'isVerified',
       label: 'Verified',
-      render: (user) => (user.isVerified ? 'Yes' : 'No'),
+      render: (user) => <Tag color={user.isVerified ? 'green' : 'default'}>{user.isVerified ? 'Yes' : 'No'}</Tag>,
     },
     {
       key: 'isLocked',
       label: 'Locked',
-      render: (user) => (user.isLocked ? 'Yes' : 'No'),
+      render: (user) => <Tag color={user.isLocked ? 'red' : 'green'}>{user.isLocked ? 'Yes' : 'No'}</Tag>,
     },
     {
       key: 'actions',

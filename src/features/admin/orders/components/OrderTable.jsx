@@ -1,3 +1,4 @@
+import { Select, Tag } from 'antd'
 import Button from '../../../../shared/ui/Button'
 import Table from '../../../../shared/ui/Table'
 import { formatCurrency } from '../../../../shared/utils/formatCurrency'
@@ -37,7 +38,11 @@ function createColumns({
       label: 'Total',
       render: (order) => formatCurrency(order.total),
     },
-    { key: 'status', label: 'Current status' },
+    {
+      key: 'status',
+      label: 'Current status',
+      render: (order) => <Tag color="gold">{order.status}</Tag>,
+    },
     {
       key: 'actions',
       label: 'Actions',
@@ -47,18 +52,16 @@ function createColumns({
 
         return (
           <div className="flex min-w-[260px] flex-wrap items-center gap-2">
-            <select
-              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-200"
+            <Select
+              className="min-w-[170px]"
               disabled={isBusy}
               value={selectedStatus}
-              onChange={(event) => onStatusDraftChange(order.id, event.target.value)}
-            >
-              {STATUS_OPTIONS.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => onStatusDraftChange(order.id, value)}
+              options={STATUS_OPTIONS.map((status) => ({
+                label: status,
+                value: status,
+              }))}
+            />
             <Button
               type="button"
               variant="secondary"

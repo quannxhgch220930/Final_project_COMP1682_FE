@@ -1,8 +1,7 @@
-import Input from '../ui/Input'
+import { Input } from 'antd'
 
 function SearchBar({
   className = '',
-  inputClassName = '',
   value,
   onChange,
   placeholder = 'Search...',
@@ -10,7 +9,7 @@ function SearchBar({
   return (
     <div className={`flex min-w-[220px] flex-1 ${className}`.trim()}>
       <Input
-        className={inputClassName}
+        size="large"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}

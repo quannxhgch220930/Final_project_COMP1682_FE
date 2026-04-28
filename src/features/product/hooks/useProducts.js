@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDebounce } from '../../../shared/hooks/useDebounce'
+import { useSearchQuery } from '../../../shared/lib/navigation'
 import { handleApiError } from '../../../shared/utils/handleApiError'
 import {
   categoryApi,
@@ -8,21 +9,70 @@ import {
 } from '../api/category.api'
 import { productApi } from '../api/product.api'
 
+function getQueryFilters(search) {
+  const params = new URLSearchParams(search)
+
+  return {
+    categoryId: params.get('categoryId') || '',
+    maxPrice: params.get('maxPrice') || '',
+    minPrice: params.get('minPrice') || '',
+    minRating: params.get('minRating') || '',
+    sort: params.get('sort') || 'newest',
+    searchTerm: params.get('search') || '',
+  }
+}
+
 export function useProducts() {
   const [categories, setCategories] = useState([])
   const [categoryTree, setCategoryTree] = useState([])
-  const [filters, setFilters] = useState({
+  const searchQuery = useSearchQuery()
+  const initialQueryFilters = typeof window === 'undefined' ? {
+    categoryId: '',
     maxPrice: '',
     minPrice: '',
     minRating: '',
     sort: 'newest',
+    searchTerm: '',
+  } : getQueryFilters(window.location.search)
+
+  const [filters, setFilters] = useState({
+    maxPrice: initialQueryFilters.maxPrice,
+    minPrice: initialQueryFilters.minPrice,
+    minRating: initialQueryFilters.minRating,
+    sort: initialQueryFilters.sort,
   })
   const [products, setProducts] = useState([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
+  const [searchTerm, setSearchTerm] = useState(initialQueryFilters.searchTerm)
+  const [selectedCategoryId, setSelectedCategoryId] = useState(initialQueryFilters.categoryId)
   const [errorMessage, setErrorMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
+
+  useEffect(() => {
+    const queryFilters = getQueryFilters(searchQuery)
+
+    if (queryFilters.searchTerm !== searchTerm) {
+      setSearchTerm(queryFilters.searchTerm)
+    }
+
+    if (queryFilters.categoryId !== selectedCategoryId) {
+      setSelectedCategoryId(queryFilters.categoryId)
+    }
+
+    if (
+      queryFilters.maxPrice !== filters.maxPrice ||
+      queryFilters.minPrice !== filters.minPrice ||
+      queryFilters.sort !== filters.sort ||
+      queryFilters.minRating !== filters.minRating
+    ) {
+      setFilters({
+        maxPrice: queryFilters.maxPrice,
+        minPrice: queryFilters.minPrice,
+        minRating: queryFilters.minRating,
+        sort: queryFilters.sort,
+      })
+    }
+  }, [searchQuery, searchTerm, selectedCategoryId, filters])
 
   useEffect(() => {
     let mounted = true

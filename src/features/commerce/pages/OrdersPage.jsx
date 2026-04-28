@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Alert, Card, Tag, Typography } from 'antd'
 import Button from '../../../shared/ui/Button'
 import { ROUTES } from '../../../shared/constants/routes'
 import { navigateTo } from '../../../shared/lib/navigation'
@@ -6,6 +7,8 @@ import { formatCurrency } from '../../../shared/utils/formatCurrency'
 import { formatDate } from '../../../shared/utils/formatDate'
 import { handleApiError } from '../../../shared/utils/handleApiError'
 import { orderApi } from '../api/order.api'
+
+const { Paragraph, Title } = Typography
 
 function OrdersPage() {
   const [errorMessage, setErrorMessage] = useState('')
@@ -43,11 +46,11 @@ function OrdersPage() {
   }, [])
 
   if (isLoading) {
-    return <p className="text-sm text-stone-500">Loading orders...</p>
+    return <Alert type="info" message="Loading orders..." showIcon />
   }
 
   if (errorMessage) {
-    return <p className="text-sm text-rose-600">{errorMessage}</p>
+    return <Alert type="error" message={errorMessage} showIcon />
   }
 
   if (orders.length === 0) {
@@ -82,27 +85,31 @@ function OrdersPage() {
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
           Order history
         </h2>
+        <p className="mt-2 text-sm text-stone-600">
+          Track the status and value of every order you have placed.
+        </p>
       </div>
 
       <div className="grid gap-4">
         {orders.map((order) => (
-          <article
+          <Card
             key={order.id}
-            className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur md:grid-cols-[minmax(0,1fr)_auto]"
+            className="grid gap-4 shadow-[0_22px_50px_rgba(63,39,18,0.08)] md:grid-cols-[minmax(0,1fr)_auto]"
           >
             <div className="grid gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+              <Paragraph className="!mb-0 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
                 #{order.id}
-              </p>
-              <h3 className="text-xl font-semibold text-stone-900">
+              </Paragraph>
+              <Title level={4} style={{ margin: 0 }}>
                 {order.totalQuantity} items
-              </h3>
-              <p className="text-sm text-stone-600">
+              </Title>
+              <Paragraph className="!mb-0 text-sm text-stone-600">
                 {formatDate(order.createdAt)} | {order.status}
-              </p>
-              <p className="text-sm text-stone-600">
+              </Paragraph>
+              <Paragraph className="!mb-0 text-sm text-stone-600">
                 Total: <strong className="text-stone-900">{formatCurrency(order.total)}</strong>
-              </p>
+              </Paragraph>
+              <Tag color="gold">{order.status}</Tag>
             </div>
 
             <div className="flex items-center">
@@ -114,7 +121,7 @@ function OrdersPage() {
                 View details
               </Button>
             </div>
-          </article>
+          </Card>
         ))}
       </div>
     </section>

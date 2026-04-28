@@ -1,5 +1,6 @@
 import Button from '../../../shared/ui/Button'
 import Input from '../../../shared/ui/Input'
+import { Alert, Card, Select, Typography } from 'antd'
 import { ROUTES } from '../../../shared/constants/routes'
 import { navigateTo } from '../../../shared/lib/navigation'
 import { formatCurrency } from '../../../shared/utils/formatCurrency'
@@ -9,6 +10,8 @@ import { useCommerce } from '../hooks/useCommerce'
 import { orderApi } from '../api/order.api'
 import { useEffect, useState } from 'react'
 import { addressApi } from '../../user/api/address.api'
+
+const { Paragraph, Title } = Typography
 
 function CartPage() {
   const {
@@ -130,25 +133,29 @@ function CartPage() {
           Shopping cart
         </p>
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
-          Review your selected items
+          Review your bag before checkout
         </h2>
+        <p className="mt-2 text-sm text-stone-600">
+          Confirm quantities, delivery details, and pricing before placing the
+          order.
+        </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_360px]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_390px]">
         <div className="grid gap-4">
           {cartItems.map((item) => (
-            <article
+            <Card
               key={item.id}
-              className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur md:grid-cols-[96px_minmax(0,1fr)_120px]"
+              className="grid gap-4 shadow-[0_22px_50px_rgba(63,39,18,0.08)] md:grid-cols-[120px_minmax(0,1fr)_140px]"
             >
               {item.product.imageUrl ? (
                 <img
-                  className="aspect-square w-24 rounded-xl object-cover"
+                  className="aspect-square w-28 rounded-2xl object-cover"
                   src={item.product.imageUrl}
                   alt={item.product.name}
                 />
               ) : (
-                <div className="grid aspect-square w-24 place-items-center rounded-xl bg-stone-100 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
+                <div className="grid aspect-square w-28 place-items-center rounded-2xl bg-stone-100 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
                   {item.product.category}
                 </div>
               )}
@@ -159,9 +166,7 @@ function CartPage() {
                   className="w-fit text-left"
                   onClick={() => navigateTo(ROUTES.productDetail(item.product.id))}
                 >
-                  <h3 className="text-lg font-semibold text-stone-900">
-                    {item.product.name}
-                  </h3>
+                  <Title level={4} style={{ margin: 0 }}>{item.product.name}</Title>
                 </button>
                 <p className="text-sm text-stone-500">{item.product.category}</p>
                 <div className="grid gap-1 text-sm text-stone-600">
@@ -174,7 +179,7 @@ function CartPage() {
                 </div>
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-3 rounded-[24px] border border-stone-200 bg-white/82 p-4">
                 <Input
                   min="1"
                   type="number"
@@ -194,16 +199,16 @@ function CartPage() {
                   Remove
                 </Button>
               </div>
-            </article>
+            </Card>
           ))}
         </div>
 
-        <aside className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur">
+        <Card className="grid gap-5 shadow-[0_24px_55px_rgba(63,39,18,0.09)]">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-              Summary
+              Checkout summary
             </p>
-            <h3 className="text-2xl font-semibold text-stone-900">Checkout</h3>
+            <h3 className="text-2xl font-semibold text-stone-900">Complete your order</h3>
           </div>
           <div className="grid gap-3 text-sm text-stone-600">
             <div className="flex items-center justify-between gap-4">
@@ -221,12 +226,10 @@ function CartPage() {
                 <label className="text-sm font-medium text-stone-700" htmlFor="checkout-address">
                   Saved address
                 </label>
-                <select
+                <Select
                   id="checkout-address"
-                  className="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-3 text-stone-900 outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-200"
                   value={selectedAddressId}
-                  onChange={(event) => {
-                    const nextId = event.target.value
+                  onChange={(nextId) => {
                     const selectedAddress =
                       addresses.find((address) => address.id === nextId) || null
 
@@ -252,16 +255,16 @@ function CartPage() {
                       receiverPhone: selectedAddress.receiverPhone,
                     }))
                   }}
-                >
-                  <option value="">Enter address manually</option>
-                  {addresses.map((address) => (
-                    <option key={address.id} value={address.id}>
-                      {`${address.receiverName} - ${address.fullAddress || address.street}`}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { label: 'Enter address manually', value: '' },
+                    ...addresses.map((address) => ({
+                      label: `${address.receiverName} - ${address.fullAddress || address.street}`,
+                      value: address.id,
+                    })),
+                  ]}
+                />
                 {isAddressesLoading ? (
-                  <p className="text-sm text-stone-500">Loading saved addresses...</p>
+                  <Alert type="info" message="Loading saved addresses..." showIcon />
                 ) : null}
               </div>
             ) : null}
@@ -317,17 +320,15 @@ function CartPage() {
             />
           </div>
           {!isAuthenticated ? (
-            <p className="text-sm text-amber-700">
-              Sign in first to place this order.
-            </p>
+            <Alert type="warning" message="Sign in first to place this order." showIcon />
           ) : null}
-          {errorMessage ? <p className="text-sm text-rose-600">{errorMessage}</p> : null}
+          {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
           <div className="flex flex-wrap gap-3">
             <Button type="button" disabled={isSubmitting} onClick={handleCheckout}>
               {isSubmitting ? 'Placing order...' : 'Place order'}
             </Button>
           </div>
-        </aside>
+        </Card>
       </div>
     </section>
   )

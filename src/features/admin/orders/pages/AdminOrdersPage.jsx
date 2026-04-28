@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Alert, Card, Select } from 'antd'
 import Button from '../../../../shared/ui/Button'
 import { handleApiError } from '../../../../shared/utils/handleApiError'
 import { adminOrderApi } from '../api/adminOrder.api'
@@ -106,31 +107,32 @@ function AdminOrdersPage() {
           <label className="text-sm font-medium text-stone-200" htmlFor="admin-order-status-filter">
             Filter by status
           </label>
-          <select
+          <Select
             id="admin-order-status-filter"
-            className="rounded-xl border border-amber-200/15 bg-[rgba(19,15,11,0.94)] px-3.5 py-3 text-stone-100 outline-none transition focus:border-amber-300/45 focus:ring-2 focus:ring-amber-200/10"
+            className="min-w-[220px]"
             value={statusFilter}
-            onChange={(event) => {
-              setStatusFilter(event.target.value)
+            onChange={(value) => {
+              setStatusFilter(value)
               setPageState((current) => ({
                 ...current,
                 page: 0,
               }))
             }}
-          >
-            <option value="">All statuses</option>
-            <option value="PENDING">PENDING</option>
-            <option value="CONFIRMED">CONFIRMED</option>
-            <option value="PROCESSING">PROCESSING</option>
-            <option value="SHIPPING">SHIPPING</option>
-            <option value="DELIVERED">DELIVERED</option>
-            <option value="CANCELLED">CANCELLED</option>
-          </select>
+            options={[
+              { label: 'All statuses', value: '' },
+              { label: 'PENDING', value: 'PENDING' },
+              { label: 'CONFIRMED', value: 'CONFIRMED' },
+              { label: 'PROCESSING', value: 'PROCESSING' },
+              { label: 'SHIPPING', value: 'SHIPPING' },
+              { label: 'DELIVERED', value: 'DELIVERED' },
+              { label: 'CANCELLED', value: 'CANCELLED' },
+            ]}
+          />
         </div>
       </div>
 
-      {errorMessage ? <p className="text-sm text-rose-300">{errorMessage}</p> : null}
-      {isLoading ? <p className="text-sm text-stone-300">Loading orders...</p> : null}
+      {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
+      {isLoading ? <Alert type="info" message="Loading orders..." showIcon /> : null}
       <OrderTable
         actionOrderId={actionOrderId}
         onStatusDraftChange={handleStatusDraftChange}
@@ -139,7 +141,8 @@ function AdminOrdersPage() {
         statusDrafts={statusDrafts}
       />
 
-      <div className="flex flex-wrap gap-3">
+      <Card>
+        <div className="flex flex-wrap gap-3">
         <Button
           type="button"
           variant="secondary"
@@ -160,7 +163,8 @@ function AdminOrdersPage() {
         >
           Next
         </Button>
-      </div>
+        </div>
+      </Card>
     </section>
   )
 }

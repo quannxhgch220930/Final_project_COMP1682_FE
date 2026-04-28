@@ -1,6 +1,8 @@
-import Button from '../../shared/ui/Button'
+import { Button, Typography } from 'antd'
 import { ROUTES } from '../../shared/constants/routes'
 import { navigateTo, usePathname } from '../../shared/lib/navigation'
+
+const { Paragraph, Title } = Typography
 
 function AdminLayout({ children, onLogout }) {
   const pathname = usePathname()
@@ -12,46 +14,90 @@ function AdminLayout({ children, onLogout }) {
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-100/70">
             ADMIN PORTAL
           </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-stone-50">
+          <Title level={1} style={{ color: '#fafaf9', margin: 0, fontSize: '2.25rem' }}>
             Management workspace
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-stone-300">
+          </Title>
+          <Paragraph
+            style={{
+              color: '#d6d3d1',
+              margin: '8px 0 0',
+              maxWidth: '42rem',
+            }}
+          >
             Dedicated dashboard for administrative actions and user control.
-          </p>
+          </Paragraph>
         </div>
 
         <nav className="flex flex-wrap gap-3" aria-label="Admin navigation">
           <Button
-            type="button"
-            className="border-amber-200/15 bg-amber-200/8 text-stone-100 hover:bg-amber-200/14"
-            variant={
+            size="large"
+            type={pathname === ROUTES.admin || pathname === ROUTES.adminProducts ? 'primary' : 'default'}
+            style={
               pathname === ROUTES.admin || pathname === ROUTES.adminProducts
-                ? 'primary'
-                : 'secondary'
+                ? {
+                    background: 'linear-gradient(135deg,#d6a85f 0%,#b8753a 100%)',
+                    borderColor: '#d6a85f',
+                    color: '#1c1917',
+                  }
+                : {
+                    background: 'rgba(214,168,95,0.08)',
+                    borderColor: 'rgba(252,211,153,0.15)',
+                    color: '#f5f5f4',
+                  }
             }
             onClick={() => navigateTo(ROUTES.adminProducts)}
           >
             Products
           </Button>
           <Button
-            type="button"
-            className="border-amber-200/15 bg-amber-200/8 text-stone-100 hover:bg-amber-200/14"
-            variant={pathname === ROUTES.adminOrders ? 'primary' : 'secondary'}
+            size="large"
+            type={pathname === ROUTES.adminOrders ? 'primary' : 'default'}
+            style={
+              pathname === ROUTES.adminOrders
+                ? {
+                    background: 'linear-gradient(135deg,#d6a85f 0%,#b8753a 100%)',
+                    borderColor: '#d6a85f',
+                    color: '#1c1917',
+                  }
+                : {
+                    background: 'rgba(214,168,95,0.08)',
+                    borderColor: 'rgba(252,211,153,0.15)',
+                    color: '#f5f5f4',
+                  }
+            }
             onClick={() => navigateTo(ROUTES.adminOrders)}
           >
             Orders
           </Button>
           <Button
-            type="button"
-            className="border-amber-200/15 bg-amber-200/8 text-stone-100 hover:bg-amber-200/14"
-            variant={pathname === ROUTES.adminUsers ? 'primary' : 'secondary'}
+            size="large"
+            type={pathname === ROUTES.adminUsers ? 'primary' : 'default'}
+            style={
+              pathname === ROUTES.adminUsers
+                ? {
+                    background: 'linear-gradient(135deg,#d6a85f 0%,#b8753a 100%)',
+                    borderColor: '#d6a85f',
+                    color: '#1c1917',
+                  }
+                : {
+                    background: 'rgba(214,168,95,0.08)',
+                    borderColor: 'rgba(252,211,153,0.15)',
+                    color: '#f5f5f4',
+                  }
+            }
             onClick={() => navigateTo(ROUTES.adminUsers)}
           >
             Users
           </Button>
           <Button
-            type="button"
-            className="bg-[linear-gradient(135deg,#d6a85f_0%,#b8753a_100%)] text-stone-950 hover:bg-[linear-gradient(135deg,#dfb66f_0%,#c78346_100%)]"
+            size="large"
+            type="primary"
+            danger
+            style={{
+              background: 'linear-gradient(135deg,#d6a85f 0%,#b8753a 100%)',
+              borderColor: '#d6a85f',
+              color: '#1c1917',
+            }}
             onClick={onLogout}
           >
             Logout

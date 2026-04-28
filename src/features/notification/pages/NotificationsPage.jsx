@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Alert, Card, Tag, Typography } from 'antd'
 import Button from '../../../shared/ui/Button'
 import { ROUTES } from '../../../shared/constants/routes'
 import { navigateTo } from '../../../shared/lib/navigation'
@@ -6,6 +7,8 @@ import { formatDate } from '../../../shared/utils/formatDate'
 import { handleApiError } from '../../../shared/utils/handleApiError'
 import { notificationApi } from '../api/notification.api'
 import { useNotifications } from '../hooks/useNotifications'
+
+const { Paragraph, Title } = Typography
 
 function getNotificationTypeLabel(type) {
   switch (type) {
@@ -112,11 +115,11 @@ function NotificationsPage() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-stone-500">Loading notifications...</p>
+    return <Alert type="info" message="Loading notifications..." showIcon />
   }
 
   if (errorMessage) {
-    return <p className="text-sm text-rose-600">{errorMessage}</p>
+    return <Alert type="error" message={errorMessage} showIcon />
   }
 
   if (notifications.length === 0) {
@@ -172,29 +175,25 @@ function NotificationsPage() {
           const action = getNotificationAction(notification)
 
           return (
-            <article
+            <Card
               key={notification.id}
-              className={`grid gap-3 rounded-2xl border p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur ${
+              className={`grid gap-3 rounded-[30px] border p-5 shadow-[0_22px_50px_rgba(63,39,18,0.08)] backdrop-blur ${
                 notification.isRead
-                  ? 'border-stone-200 bg-white/80'
-                  : 'border-amber-200 bg-amber-50/90'
+                  ? 'border-stone-200 bg-[rgba(255,251,245,0.88)]'
+                  : 'border-amber-200 bg-[rgba(255,244,226,0.95)]'
               }`}
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="grid gap-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-                    {getNotificationTypeLabel(notification.type)}
-                  </p>
-                  <h3 className="text-xl font-semibold text-stone-900">
-                    {notification.title}
-                  </h3>
+                  <Tag>{getNotificationTypeLabel(notification.type)}</Tag>
+                  <Title level={4} style={{ margin: 0 }}>{notification.title}</Title>
                 </div>
                 <span className="text-sm text-stone-500">
                   {notification.createdAt ? formatDate(notification.createdAt) : 'N/A'}
                 </span>
               </div>
 
-              <p className="text-sm text-stone-700">{notification.body}</p>
+              <Paragraph className="!mb-0 text-sm text-stone-700">{notification.body}</Paragraph>
 
               {action ? (
                 <div>
@@ -207,7 +206,7 @@ function NotificationsPage() {
                   </Button>
                 </div>
               ) : null}
-            </article>
+            </Card>
           )
         })}
       </div>

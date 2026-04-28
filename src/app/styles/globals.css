@@ -61,6 +61,67 @@ input {
   box-shadow: 0 24px 80px rgba(93, 56, 22, 0.14);
 }
 
+.login-page-shell {
+  width: min(100%, 470px);
+  margin: 0 auto;
+}
+
+.login-page-form-card {
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.login-page-form-card .ant-card-body {
+  padding: 0 !important;
+}
+
+.login-page-form-card .ant-input,
+.login-page-form-card .ant-input-affix-wrapper {
+  min-height: 54px;
+  border-radius: 0;
+  border: 2px solid #a8b4cb;
+  background: #fffdf9;
+  box-shadow: none;
+}
+
+.login-page-submit-button {
+  width: 100%;
+  min-height: 50px;
+  border-radius: 0 !important;
+  background: #58657a !important;
+  border-color: #58657a !important;
+  box-shadow: none !important;
+}
+
+.login-page-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  color: #a8aeb8;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+}
+
+.login-page-divider::before,
+.login-page-divider::after {
+  content: '';
+  height: 1px;
+  background: #cfd4dc;
+}
+
+.login-page-secondary-button {
+  min-height: 54px;
+  width: 100%;
+  border: 2px solid #a8b4cb;
+  background: #fffdf9;
+  color: #2d2016;
+  font: inherit;
+  cursor: pointer;
+}
+
 .auth-header {
   margin-bottom: 24px;
 }

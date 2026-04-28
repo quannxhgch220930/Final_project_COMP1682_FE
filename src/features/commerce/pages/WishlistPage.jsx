@@ -1,8 +1,11 @@
+import { Alert, Card, Typography } from 'antd'
 import Button from '../../../shared/ui/Button'
 import { ROUTES } from '../../../shared/constants/routes'
 import { navigateTo } from '../../../shared/lib/navigation'
 import { formatCurrency } from '../../../shared/utils/formatCurrency'
 import { useCommerce } from '../hooks/useCommerce'
+
+const { Paragraph, Title } = Typography
 
 function WishlistPage() {
   const { addCartItem, removeWishlistItem, wishlistItems } = useCommerce()
@@ -39,13 +42,16 @@ function WishlistPage() {
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
           Saved products
         </h2>
+        <p className="mt-2 text-sm text-stone-600">
+          Keep an eye on products you may want to compare or buy later.
+        </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {wishlistItems.map((product) => (
-          <article
+          <Card
             key={product.productId}
-            className="grid gap-4 rounded-2xl border border-stone-200 bg-white/85 p-5 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur"
+            className="grid gap-4 shadow-[0_22px_50px_rgba(63,39,18,0.08)]"
           >
             {product.imageUrl ? (
               <img
@@ -60,24 +66,22 @@ function WishlistPage() {
             )}
 
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+              <Paragraph className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
                 {product.category}
-              </p>
+              </Paragraph>
               <button
                 type="button"
                 className="text-left"
                 onClick={() => navigateTo(ROUTES.productDetail(product.productId))}
               >
-                <h3 className="text-xl font-semibold text-stone-900">{product.name}</h3>
+                <Title level={4} style={{ margin: 0 }}>{product.name}</Title>
               </button>
             </div>
 
-            <p className="text-lg font-semibold text-stone-900">
-              {formatCurrency(product.price)}
-            </p>
+            <Title level={5} style={{ margin: 0 }}>{formatCurrency(product.price)}</Title>
 
-            <div className="flex flex-wrap gap-3">
-              <Button type="button" onClick={() => addCartItem(product)}>
+            <div className="flex flex-wrap gap-3 border-t border-stone-200 pt-4">
+              <Button type="button" className="flex-1" onClick={() => addCartItem(product)}>
                 Add to cart
               </Button>
               <Button
@@ -88,7 +92,7 @@ function WishlistPage() {
                 Remove
               </Button>
             </div>
-          </article>
+          </Card>
         ))}
       </div>
     </section>

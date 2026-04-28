@@ -1,26 +1,14 @@
-import Button from '../ui/Button'
+import { Pagination as AntPagination } from 'antd'
 
 function Pagination({ currentPage, totalPages, onChange }) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={() => onChange(Math.max(1, currentPage - 1))}
-      >
-        Previous
-      </Button>
-      <span className="text-sm text-stone-500">
-        Page {currentPage} / {totalPages}
-      </span>
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={() => onChange(Math.min(totalPages, currentPage + 1))}
-      >
-        Next
-      </Button>
-    </div>
+    <AntPagination
+      current={currentPage}
+      pageSize={1}
+      total={totalPages}
+      onChange={onChange}
+      showSizeChanger={false}
+    />
   )
 }
 

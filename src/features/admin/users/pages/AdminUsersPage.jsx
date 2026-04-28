@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Alert, Card } from 'antd'
 import Button from '../../../../shared/ui/Button'
 import { ROLES } from '../../../../shared/constants/roles'
 import { handleApiError } from '../../../../shared/utils/handleApiError'
@@ -117,8 +118,8 @@ function AdminUsersPage() {
         </p>
       </div>
 
-      {errorMessage ? <p className="text-sm text-rose-300">{errorMessage}</p> : null}
-      {isLoading ? <p className="text-sm text-stone-300">Loading users...</p> : null}
+      {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
+      {isLoading ? <Alert type="info" message="Loading users..." showIcon /> : null}
       <UserTable
         actionUserId={actionUserId}
         onDelete={handleDelete}
@@ -127,7 +128,8 @@ function AdminUsersPage() {
         users={users}
       />
 
-      <div className="flex flex-wrap gap-3">
+      <Card>
+        <div className="flex flex-wrap gap-3">
         <Button
           type="button"
           variant="secondary"
@@ -148,7 +150,8 @@ function AdminUsersPage() {
         >
           Next
         </Button>
-      </div>
+        </div>
+      </Card>
     </section>
   )
 }

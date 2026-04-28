@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Alert, Card, Typography } from 'antd'
 import Button from '../../../shared/ui/Button'
 import Input from '../../../shared/ui/Input'
 import { ROUTES } from '../../../shared/constants/routes'
@@ -7,11 +8,23 @@ import { handleApiError } from '../../../shared/utils/handleApiError'
 import { authClientApi } from '../api/authClient.api'
 import { useAuth } from '../hooks/useAuth'
 
+const { Paragraph, Text } = Typography
+
 function LoginForm({
+  afterCardContent = null,
   adminOnly = false,
+  cardClassName = '',
+  emailLabel = 'Email',
+  emailPlaceholder = 'you@example.com',
+  forgotPasswordLabel = '',
+  onForgotPasswordClick,
   theme = 'default',
+  passwordLabel = 'Password',
+  passwordPlaceholder = 'Enter your password',
   submitLabel = 'Login',
   submittingLabel = 'Logging in...',
+  submitButtonClassName = '',
+  wrapperClassName = '',
 }) {
   const { login } = useAuth()
   const [formData, setFormData] = useState({
@@ -36,10 +49,6 @@ function LoginForm({
     : isLightPortal
       ? 'border-amber-200/80 bg-white/85 text-stone-900 placeholder:text-stone-400 focus:border-amber-300 focus:ring-amber-100'
       : ''
-  const statusClassName = isDarkPortal
-    ? 'bg-amber-300/12 text-amber-100'
-    : 'bg-emerald-100 text-emerald-700'
-  const errorClassName = isDarkPortal ? 'text-rose-300' : 'text-rose-600'
   const verifyStatusClassName = isDarkPortal
     ? 'bg-amber-300/12 text-amber-100'
     : 'bg-amber-100 text-amber-800'
@@ -67,7 +76,7 @@ function LoginForm({
       })
       setStatus(response?.message || 'Login request completed')
 
-      navigateTo(adminOnly ? ROUTES.admin : ROUTES.profile, {
+      navigateTo(adminOnly ? ROUTES.admin : ROUTES.home, {
         replace: true,
       })
     } catch (error) {
@@ -101,58 +110,76 @@ function LoginForm({
 
   return (
     <form
-      className={`grid gap-5 rounded-2xl border p-6 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur ${panelClassName}`.trim()}
+      className={`grid gap-5 ${wrapperClassName}`.trim()}
       onSubmit={handleSubmit}
     >
-      <div className="grid gap-2">
-        <label className={`text-sm font-medium ${labelClassName}`} htmlFor="email">
-          Email
-        </label>
-        <Input
-          id="email"
-          className={inputClassName}
-          type="email"
-          value={formData.email}
-          onChange={handleChange('email')}
-          placeholder="you@example.com"
-        />
-      </div>
+      <Card
+        className={`${panelClassName} ${cardClassName}`.trim()}
+        styles={{ body: { padding: 24 } }}
+      >
+        <div className="grid gap-5">
+          <div className="grid gap-2">
+            <label className={`text-sm font-medium ${labelClassName}`} htmlFor="email">
+              {emailLabel}
+            </label>
+            <Input
+              id="email"
+              className={inputClassName}
+              type="email"
+              value={formData.email}
+              onChange={handleChange('email')}
+              placeholder={emailPlaceholder}
+            />
+          </div>
 
-      <div className="grid gap-2">
-        <label className={`text-sm font-medium ${labelClassName}`} htmlFor="password">
-          Password
-        </label>
-        <Input
-          id="password"
-          className={inputClassName}
-          type="password"
-          value={formData.password}
-          onChange={handleChange('password')}
-          placeholder="Enter your password"
-        />
-      </div>
+          <div className="grid gap-2">
+            <label className={`text-sm font-medium ${labelClassName}`} htmlFor="password">
+              {passwordLabel}
+            </label>
+            <Input
+              id="password"
+              className={inputClassName}
+              type="password"
+              value={formData.password}
+              onChange={handleChange('password')}
+              placeholder={passwordPlaceholder}
+            />
+          </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? submittingLabel : submitLabel}
-        </Button>
-      </div>
+          {forgotPasswordLabel ? (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className={`text-sm underline-offset-4 transition hover:underline ${isDarkPortal ? 'text-amber-100' : 'text-[#8e4f22]'}`}
+                onClick={onForgotPasswordClick}
+              >
+                {forgotPasswordLabel}
+              </button>
+            </div>
+          ) : null}
 
-      {status ? (
-        <span className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-sm font-medium ${statusClassName}`}>
-          {status}
-        </span>
-      ) : null}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              type="submit"
+              className={submitButtonClassName}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? submittingLabel : submitLabel}
+            </Button>
+          </div>
+
+          {status ? <Alert type="success" message={status} showIcon /> : null}
+        </div>
+      </Card>
+
       {errorMessage ? (
         <div className="grid gap-3">
-          <p className={`text-sm ${errorClassName}`}>
-            {errorMessage}
-          </p>
+          <Alert type="error" message={errorMessage} showIcon />
           {canResendVerify ? (
             <div className="flex flex-wrap items-center gap-3">
-              <p className={`text-sm ${isDarkPortal ? 'text-stone-300' : 'text-stone-600'}`}>
+              <Paragraph className={`!mb-0 text-sm ${isDarkPortal ? '!text-stone-300' : '!text-stone-600'}`}>
                 This account may still be waiting for email verification.
-              </p>
+              </Paragraph>
               <Button
                 type="button"
                 variant="secondary"
@@ -166,10 +193,13 @@ function LoginForm({
         </div>
       ) : null}
       {verifyStatus ? (
-        <span className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-sm font-medium ${verifyStatusClassName}`}>
-          {verifyStatus}
-        </span>
+        <Alert
+          type="warning"
+          message={<Text className={verifyStatusClassName}>{verifyStatus}</Text>}
+          showIcon
+        />
       ) : null}
+      {afterCardContent}
     </form>
   )
 }

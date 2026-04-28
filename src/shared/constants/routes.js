@@ -13,9 +13,13 @@ export const ROUTES = {
   orderDetail: (id) => `/orders/${id}`,
   orders: '/orders',
   profile: '/profile',
+  profileEdit: '/profile/edit',
+  profileAddress: '/profile/address',
+  profilePassword: '/profile/password',
   productDetail: (id) => `/products/${id}`,
   products: '/products',
   register: '/register',
   resetPassword: '/reset-password',
   wishlist: '/wishlist',
+  filter: '/filter',
 }

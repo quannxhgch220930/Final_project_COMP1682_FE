@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Alert, Checkbox, Input as AntInput, Select } from 'antd'
 import ProductTable from '../components/ProductTable'
 import { adminProductApi } from '../api/adminProduct.api'
 import { handleApiError } from '../../../../shared/utils/handleApiError'
@@ -473,19 +474,18 @@ function AdminProductsPage() {
               <label className="text-sm font-medium text-amber-50" htmlFor="admin-product-category">
                 Category
               </label>
-              <select
+              <Select
                 id="admin-product-category"
-                className="w-full rounded-xl border border-amber-200/15 bg-[rgba(19,15,11,0.94)] px-3.5 py-3 text-amber-50 outline-none transition focus:border-amber-300/45 focus:ring-2 focus:ring-amber-200/10"
                 value={formValues.categoryId}
-                onChange={handleFormChange('categoryId')}
-              >
-                <option value="">Select category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {`${'-- '.repeat(category.depth)}${category.name}`}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => handleFormChange('categoryId')({ target: { value } })}
+                options={[
+                  { label: 'Select category', value: '' },
+                  ...categories.map((category) => ({
+                    label: `${'-- '.repeat(category.depth)}${category.name}`,
+                    value: category.id,
+                  })),
+                ]}
+              />
               {formErrors.categoryId ? (
                 <p className="text-sm text-rose-300">{formErrors.categoryId}</p>
               ) : null}
@@ -498,9 +498,9 @@ function AdminProductsPage() {
               >
                 Description
               </label>
-              <textarea
+              <AntInput.TextArea
                 id="admin-product-description"
-                className="min-h-32 rounded-xl border border-amber-200/15 bg-[rgba(19,15,11,0.94)] px-3.5 py-3 text-amber-50 outline-none transition focus:border-amber-300/45 focus:ring-2 focus:ring-amber-200/10"
+                rows={5}
                 value={formValues.description}
                 onChange={handleFormChange('description')}
                 placeholder="Product description"
@@ -561,14 +561,11 @@ function AdminProductsPage() {
               />
             </div>
 
-            <label className="mt-7 inline-flex items-center gap-3 text-sm text-stone-200">
-              <input
-                type="checkbox"
-                checked={imageFormValues.isPrimary}
-                onChange={handleImageFormChange('isPrimary')}
-              />
-              Primary
-            </label>
+            <div className="mt-7">
+              <Checkbox checked={imageFormValues.isPrimary} onChange={handleImageFormChange('isPrimary')}>
+                <span className="text-stone-200">Primary</span>
+              </Checkbox>
+            </div>
 
             <div className="mt-6">
               <Button type="submit" disabled={isImageSubmitting}>
@@ -590,16 +587,12 @@ function AdminProductsPage() {
                     alt={`${selectedProduct.name} image`}
                   />
                   <div className="grid gap-3">
-                    <label className="inline-flex items-center gap-3 text-sm text-stone-200">
-                      <input
-                        type="checkbox"
-                        checked={
-                          imageDrafts[image.id]?.isPrimary ?? Boolean(image.isPrimary)
-                        }
-                        onChange={handleImageDraftChange(image.id, 'isPrimary')}
-                      />
-                      Primary image
-                    </label>
+                    <Checkbox
+                      checked={imageDrafts[image.id]?.isPrimary ?? Boolean(image.isPrimary)}
+                      onChange={handleImageDraftChange(image.id, 'isPrimary')}
+                    >
+                      <span className="text-stone-200">Primary image</span>
+                    </Checkbox>
                     <div className="grid gap-2">
                       <label
                         className="text-sm font-medium text-stone-200"
@@ -645,8 +638,8 @@ function AdminProductsPage() {
         </section>
       ) : null}
 
-      {errorMessage ? <p className="text-sm text-rose-300">{errorMessage}</p> : null}
-      {isLoading ? <p className="text-sm text-stone-300">Loading products...</p> : null}
+      {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
+      {isLoading ? <Alert type="info" message="Loading products..." showIcon /> : null}
       <ProductTable
         actionProductId={actionProductId}
         onDelete={handleDelete}

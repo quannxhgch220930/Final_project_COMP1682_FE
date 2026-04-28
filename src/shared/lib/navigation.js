@@ -22,6 +22,22 @@ export function getCurrentPath() {
   return normalizePath(window.location.pathname)
 }
 
+export function getCurrentSearch() {
+  if (typeof window === 'undefined') {
+    return ''
+  }
+
+  return window.location.search
+}
+
+export function getCurrentLocation() {
+  if (typeof window === 'undefined') {
+    return '/'
+  }
+
+  return `${normalizePath(window.location.pathname)}${window.location.search}`
+}
+
 function notifyNavigationChange() {
   window.dispatchEvent(new Event(NAVIGATION_EVENT))
 }
@@ -32,9 +48,9 @@ export function navigateTo(path, options = {}) {
   }
 
   const nextPath = normalizePath(path)
-  const currentPath = getCurrentPath()
+  const currentLocation = getCurrentLocation()
 
-  if (currentPath === nextPath) {
+  if (currentLocation === nextPath) {
     return
   }
 
@@ -59,4 +75,8 @@ function subscribe(onStoreChange) {
 
 export function usePathname() {
   return useSyncExternalStore(subscribe, getCurrentPath, () => '/')
+}
+
+export function useSearchQuery() {
+  return useSyncExternalStore(subscribe, getCurrentSearch, () => '')
 }
