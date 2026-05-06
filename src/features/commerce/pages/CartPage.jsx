@@ -147,61 +147,89 @@ function CartPage() {
         <div className="grid gap-4">
           {cartItems.map((item) => (
             <Card
-              key={item.id}
-              className="grid gap-4 shadow-[0_22px_50px_rgba(63,39,18,0.08)] md:grid-cols-[120px_minmax(0,1fr)_140px]"
-            >
-              {item.product.imageUrl ? (
-                <img
-                  className="aspect-square w-28 rounded-2xl object-cover"
-                  src={item.product.imageUrl}
-                  alt={item.product.name}
-                />
-              ) : (
-                <div className="grid aspect-square w-28 place-items-center rounded-2xl bg-stone-200 text-xs font-bold uppercase tracking-[0.12em] text-stone-800">
-                  {item.product.category}
-                </div>
+            key={item.id}
+            className="flex items-center gap-4 rounded-2xl border border-stone-200 p-4 shadow-sm hover:shadow-md transition"
+          >
+            {/* Image */}
+            {item.product.imageUrl ? (
+              <img
+                src={item.product.imageUrl}
+                alt={item.product.name}
+                className="h-20 w-20 rounded-xl object-cover"
+              />
+            ) : (
+              <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-stone-100 text-stone-400">
+                <span className="text-xs">No image</span>
+              </div>
+            )}
+
+            {/* Info */}
+            <div className="flex flex-1 flex-col gap-1">
+              <button
+                onClick={() => navigateTo(ROUTES.productDetail(item.product.id))}
+                className="text-left"
+              >
+                <h3 className="text-base font-semibold text-stone-900 hover:underline">
+                  {item.product.name}
+                </h3>
+              </button>
+
+              <p className="text-xs text-stone-500">
+                {item.product.category}
+              </p>
+
+              <div className="text-sm font-medium text-stone-700">
+                {formatCurrency(item.unitPrice)}
+              </div>
+
+              {item.currentPrice !== item.unitPrice && (
+                <span className="text-xs text-amber-600">
+                  Now: {formatCurrency(item.currentPrice)}
+                </span>
               )}
+            </div>
 
-              <div className="grid gap-2">
+            {/* Actions */}
+            <div className="flex flex-col items-end gap-2">
+              {/* Quantity */}
+              <div className="flex items-center rounded-lg border border-stone-200">
                 <button
-                  type="button"
-                  className="w-fit text-left"
-                  onClick={() => navigateTo(ROUTES.productDetail(item.product.id))}
+                  className="px-2 py-1 text-sm text-stone-600 hover:bg-stone-100"
+                  onClick={() =>
+                    updateCartItemQuantity(item.id, item.quantity - 1)
+                  }
                 >
-                  <Title level={4} style={{ margin: 0 }}>{item.product.name}</Title>
+                  -
                 </button>
-                <p className="text-sm font-medium text-stone-700">{item.product.category}</p>
-                <div className="grid gap-1 text-sm font-medium text-stone-700">
-                  <p>Unit price: {formatCurrency(item.unitPrice)}</p>
-                  {item.currentPrice !== item.unitPrice ? (
-                    <p className="text-xs text-amber-700">
-                      Current product price: {formatCurrency(item.currentPrice)}
-                    </p>
-                  ) : null}
-                </div>
+
+                <span className="px-3 text-sm font-medium">
+                  {item.quantity}
+                </span>
+
+                <button
+                  className="px-2 py-1 text-sm text-stone-600 hover:bg-stone-100"
+                  onClick={() =>
+                    updateCartItemQuantity(item.id, item.quantity + 1)
+                  }
+                >
+                  +
+                </button>
               </div>
 
-              <div className="grid gap-3 rounded-[24px] border border-stone-300 bg-white p-4">
-                <Input
-                  min="1"
-                  type="number"
-                  value={String(item.quantity)}
-                  onChange={(event) =>
-                    updateCartItemQuantity(item.id, event.target.value)
-                  }
-                />
-                <p className="text-sm font-semibold text-stone-900">
-                  {formatCurrency(item.subtotal)}
-                </p>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => removeCartItem(item.id)}
-                >
-                  Remove
-                </Button>
+              {/* Subtotal */}
+              <div className="text-sm font-semibold text-stone-900">
+                {formatCurrency(item.subtotal)}
               </div>
-            </Card>
+
+              {/* Remove */}
+              <button
+                onClick={() => removeCartItem(item.id)}
+                className="text-xs text-red-500 hover:underline"
+              >
+                Remove
+              </button>
+            </div>
+          </Card>
           ))}
         </div>
 
