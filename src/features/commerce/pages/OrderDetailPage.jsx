@@ -126,7 +126,6 @@ function OrderDetailPage({ orderId }) {
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
           {order.status}
         </h2>
-        <p className="mt-2 text-sm font-medium text-stone-700">{formatDate(order.createdAt)}</p>
       </div>
 
       {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
@@ -135,40 +134,61 @@ function OrderDetailPage({ orderId }) {
         <div className="grid gap-4">
           {order.items.map((item) => (
             <Card
-              key={item.id || item.productId}
-              className="grid gap-4 shadow-[0_20px_45px_rgba(63,39,18,0.08)] md:grid-cols-[96px_minmax(0,1fr)_140px]"
-            >
-              {item.product.imageUrl ? (
-                <img
-                  className="aspect-square w-24 rounded-xl object-cover"
-                  src={item.product.imageUrl}
-                  alt={item.product.name}
-                />
-              ) : (
-                <div className="grid aspect-square w-24 place-items-center rounded-xl bg-stone-200 text-xs font-bold uppercase tracking-[0.12em] text-stone-800">
-                  {item.product.category}
+            key={item.id || item.productId}
+            className="shadow-[0_12px_30px_rgba(0,0,0,0.06)] rounded-2xl"
+            bodyStyle={{ padding: '16px' }}
+          >
+            <div className="flex gap-4">
+
+              {/* IMAGE */}
+              <div className="w-20 h-20 flex-shrink-0">
+                {item.product.imageUrl ? (
+                  <img
+                    src={item.product.imageUrl}
+                    alt={item.product.name}
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-stone-200 rounded-xl text-xs font-semibold text-stone-600 text-center px-1">
+                    {item.product.category}
+                  </div>
+                )}
+              </div>
+
+              {/* CONTENT */}
+              <div className="flex flex-1 justify-between gap-4 min-w-0">
+
+                {/* LEFT */}
+                <div className="flex flex-col gap-1 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => navigateTo(ROUTES.productDetail(item.productId))}
+                    className="text-left"
+                  >
+                    <Title level={5} className="!mb-0 truncate">
+                      {item.product.name}
+                    </Title>
+                  </button>
+
+                  <span className="text-sm text-stone-500">
+                    {item.product.category}
+                  </span>
+
+                  <span className="text-sm text-stone-600">
+                    Qty: {item.quantity} × {formatCurrency(item.unitPrice)}
+                  </span>
                 </div>
-              )}
 
-              <div className="grid gap-2">
-                <button
-                  type="button"
-                  className="w-fit text-left"
-                  onClick={() => navigateTo(ROUTES.productDetail(item.productId))}
-                >
-                  <Title level={4} style={{ margin: 0 }}>{item.product.name}</Title>
-                </button>
-                <p className="text-sm font-medium text-stone-700">{item.product.category}</p>
-              </div>
+                {/* RIGHT */}
+                <div className="flex flex-col justify-between items-end">
+                  <span className="text-base font-semibold text-stone-900 whitespace-nowrap">
+                    {formatCurrency(item.lineTotal)}
+                  </span>
+                </div>
 
-              <div className="grid gap-2 text-sm font-medium text-stone-700">
-                <p>Qty: {item.quantity}</p>
-                <p>Unit: {formatCurrency(item.unitPrice)}</p>
-                <p className="font-semibold text-stone-900">
-                  {formatCurrency(item.lineTotal)}
-                </p>
               </div>
-            </Card>
+            </div>
+          </Card>
           ))}
 
           {order.statusLogs.length > 0 ? (

@@ -6,9 +6,6 @@ const { Paragraph, Title } = Typography
 function ProfilePasswordPage() {
   return (
     <section className="grid gap-6">
-      <div>
-      </div>
-
       <ChangePasswordForm />
     </section>
   )

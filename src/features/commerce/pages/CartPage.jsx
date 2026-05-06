@@ -141,13 +141,6 @@ function CartPage() {
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
           Shopping cart
         </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
-          Review your bag before checkout
-        </h2>
-        <p className="mt-2 text-sm font-medium text-stone-700">
-          Confirm quantities, delivery details, and pricing before placing the
-          order.
-        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_390px]">
@@ -215,9 +208,8 @@ function CartPage() {
         <Card className="grid gap-5 shadow-[0_24px_55px_rgba(63,39,18,0.09)]">
           <div>
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-stone-700">
-              Checkout summary
+              Your order preview
             </p>
-            <h3 className="text-2xl font-semibold text-stone-900">Complete your order</h3>
           </div>
           <div className="grid gap-3 text-sm font-medium text-stone-700">
             <div className="flex items-center justify-between gap-4">

@@ -57,15 +57,9 @@ function ProfilePage() {
   return (
     <section className="grid gap-6">
       <div>
-        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
-          Account
-        </p>
         <Title level={2} style={{ margin: 0 }}>
-          Your profile dashboard
+          Your profile
         </Title>
-        <Paragraph className="mt-2 text-sm font-medium text-stone-700">
-          Choose one of the actions below to manage your account.
-        </Paragraph>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -73,14 +67,8 @@ function ProfilePage() {
           className="cursor-pointer border-stone-300 shadow-sm transition hover:border-stone-700 hover:shadow-md"
           onClick={() => navigateTo(ROUTES.profileEdit)}
         >
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
-            Personal information
-          </p>
-          <Title level={4} className="mt-3">
-            Edit profile
-          </Title>
           <Paragraph className="mt-2 text-sm font-medium text-stone-700">
-            Update your name, email, phone number and date of birth.
+            Update your infomations
           </Paragraph>
         </Card>
 
@@ -88,30 +76,18 @@ function ProfilePage() {
           className="cursor-pointer border-stone-300 shadow-sm transition hover:border-stone-700 hover:shadow-md"
           onClick={() => navigateTo(ROUTES.profileAddress)}
         >
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
-            Shipping address
-          </p>
           <Title level={4} className="mt-3">
-            Manage addresses
+            Manage Your addresses
           </Title>
-          <Paragraph className="mt-2 text-sm font-medium text-stone-700">
-            Add or edit your saved delivery addresses.
-          </Paragraph>
         </Card>
 
         <Card
           className="cursor-pointer border-stone-300 shadow-sm transition hover:border-stone-700 hover:shadow-md"
           onClick={() => navigateTo(ROUTES.profilePassword)}
         >
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
-            Security
-          </p>
           <Title level={4} className="mt-3">
-            Change password
+            Change Your password
           </Title>
-          <Paragraph className="mt-2 text-sm font-medium text-stone-700">
-            Secure your account by updating your password.
-          </Paragraph>
         </Card>
       </div>
     </section>
