@@ -56,13 +56,13 @@ function ProfileEditPage() {
   return (
     <section className="grid gap-6">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
           Personal information
         </p>
         <Title level={2} style={{ margin: 0 }}>
           Edit your profile
         </Title>
-        <Paragraph className="mt-2 text-sm text-stone-600">
+        <Paragraph className="mt-2 text-sm font-medium text-stone-700">
           Update your basic account details and contact information.
         </Paragraph>
       </div>

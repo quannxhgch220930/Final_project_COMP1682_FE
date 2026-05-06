@@ -41,13 +41,13 @@ function LoginForm({
   const panelClassName = isDarkPortal
     ? 'border-amber-200/18 bg-[rgba(28,21,15,0.9)] shadow-[0_22px_50px_rgba(10,8,5,0.32)]'
     : isLightPortal
-      ? 'border-amber-200/70 bg-white/70'
-      : 'border-stone-200 bg-white/85'
+      ? 'border-amber-300 bg-white'
+      : 'border-stone-300 bg-white'
   const labelClassName = isDarkPortal ? 'text-amber-50' : 'text-stone-700'
   const inputClassName = isDarkPortal
-    ? 'border-amber-200/15 bg-[rgba(19,15,11,0.94)] text-amber-50 placeholder:text-stone-500 focus:border-amber-300/45 focus:ring-amber-200/10'
+    ? 'border-amber-300 bg-stone-950 text-amber-50 placeholder:text-stone-300 focus:border-amber-200 focus:ring-amber-200/20'
     : isLightPortal
-      ? 'border-amber-200/80 bg-white/85 text-stone-900 placeholder:text-stone-400 focus:border-amber-300 focus:ring-amber-100'
+      ? 'border-amber-400 bg-white text-stone-950 placeholder:text-stone-700 focus:border-amber-500 focus:ring-amber-100'
       : ''
   const verifyStatusClassName = isDarkPortal
     ? 'bg-amber-300/12 text-amber-100'
@@ -177,7 +177,7 @@ function LoginForm({
           <Alert type="error" message={errorMessage} showIcon />
           {canResendVerify ? (
             <div className="flex flex-wrap items-center gap-3">
-              <Paragraph className={`!mb-0 text-sm ${isDarkPortal ? '!text-stone-300' : '!text-stone-600'}`}>
+              <Paragraph className={`!mb-0 text-sm font-medium ${isDarkPortal ? '!text-stone-200' : '!text-stone-700'}`}>
                 This account may still be waiting for email verification.
               </Paragraph>
               <Button

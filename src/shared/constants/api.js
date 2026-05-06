@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
     update: (id) => `/addresses/${id}`,
   },
   admin: {
+    deleteOrder: (id) => `/admin/orders/${id}`,
     deleteUser: (id) => `/admin/users/${id}`,
     orders: '/admin/orders',
     productImages: (id) => `/admin/products/${id}/images`,
@@ -32,6 +33,7 @@ export const API_ENDPOINTS = {
     register: '/auth/register',
     resendVerify: '/auth/resend-verify',
     resetPassword: '/auth/reset-password',
+    verifyEmail: '/auth/verify',
   },
   categories: {
     list: '/categories',
@@ -58,5 +60,10 @@ export const API_ENDPOINTS = {
     check: (productId) => `/wishlist/check/${productId}`,
     list: '/wishlist',
     remove: (productId) => `/wishlist/${productId}`,
+  },
+  vnpay: {
+    createPayment: (orderId) => `/payments/vnpay/create/${orderId}`,
+    ipn: '/payments/vnpay/ipn',
+    return: '/payments/vnpay/return',
   },
 }

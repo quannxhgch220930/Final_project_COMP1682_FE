@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Button as AntButton, Input, Tag, Typography } from 'antd'
+import { Button as AntButton, Dropdown, Input, Tag, Typography } from 'antd'
 import MainLayout from '../layouts/MainLayout'
 import AdminLayout from '../layouts/AdminLayout'
 import Button from '../../shared/ui/Button'
@@ -16,6 +16,7 @@ import LoginPage from '../../features/auth/pages/LoginPage'
 import ForgotPasswordPage from '../../features/auth/pages/ForgotPasswordPage'
 import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage'
 import RegisterPage from '../../features/auth/pages/RegisterPage'
+import VerifyEmailPage from '../../features/auth/pages/VerifyEmailPage'
 import AdminLoginPage from '../../features/auth/pages/AdminLoginPage'
 import OAuthCallbackPage from '../../features/auth/pages/OAuthCallbackPage'
 import AdminOrdersPage from '../../features/admin/orders/pages/AdminOrdersPage'
@@ -26,9 +27,12 @@ import ProfilePage from '../../features/user/pages/ProfilePage'
 import ProfileEditPage from '../../features/user/pages/ProfileEditPage'
 import ProfileAddressPage from '../../features/user/pages/ProfileAddressPage'
 import ProfilePasswordPage from '../../features/user/pages/ProfilePasswordPage'
+import ProfileShell from '../../features/user/components/ProfileShell'
+import PaymentResultPage from '../../features/commerce/pages/PaymentResultPage'
 import { navigateTo, usePathname, useSearchQuery } from '../../shared/lib/navigation'
 import { ROUTES } from '../../shared/constants/routes'
 import { ROLES } from '../../shared/constants/roles'
+import { useCommerce } from '../../features/commerce/hooks/useCommerce'
 
 function getProductIdFromPath(pathname) {
   if (!pathname.startsWith(`${ROUTES.products}/`)) {
@@ -65,6 +69,7 @@ function AppRouter() {
   const searchQuery = useSearchQuery()
   const headerSearchValue = new URLSearchParams(searchQuery).get('search') || ''
   const { initialized, isAuthenticated, logout, user } = useAuth()
+  const { cartTotalItems, wishlistItems } = useCommerce()
   const isAdmin = user?.role === ROLES.admin
   const productId = getProductIdFromPath(pathname)
   const orderId = getOrderIdFromPath(pathname)
@@ -79,6 +84,7 @@ function AppRouter() {
     pathname === ROUTES.register ||
     pathname === ROUTES.forgotPassword ||
     pathname === ROUTES.resetPassword ||
+    pathname === ROUTES.verifyEmail ||
     pathname === ROUTES.oauthCallback
   const userBadgeLabel = getUserBadgeLabel(user)
 
@@ -102,9 +108,42 @@ function AppRouter() {
     navigateTo(`${ROUTES.products}${params.toString() ? `?${params.toString()}` : ''}`)
   }
 
+  const handleUserMenuClick = ({ key }) => {
+    if (key === 'logout') {
+      handleLogout()
+      return
+    }
+
+    switch (key) {
+      case 'profile':
+        navigateTo(ROUTES.profile)
+        break
+      case 'edit':
+        navigateTo(ROUTES.profileEdit)
+        break
+      case 'address':
+        navigateTo(ROUTES.profileAddress)
+        break
+      case 'password':
+        navigateTo(ROUTES.profilePassword)
+        break
+      default:
+        break
+    }
+  }
+
+  const userMenuItems = [
+    { key: 'profile', label: 'My profile' },
+    { key: 'edit', label: 'Edit profile' },
+    { key: 'address', label: 'Shipping address' },
+    { key: 'password', label: 'Change password' },
+    { type: 'divider' },
+    { key: 'logout', label: 'Logout' },
+  ]
+
   const headerClassName = pathname === ROUTES.profile
-    ? 'z-40 mb-8 overflow-hidden rounded-[34px] border border-stone-200 bg-[radial-gradient(circle_at_top_left,rgba(153,88,42,0.16),transparent_26%),linear-gradient(135deg,rgba(255,252,246,0.95)_0%,rgba(252,244,234,0.92)_100%)] shadow-[0_24px_60px_rgba(63,39,18,0.08)] backdrop-blur'
-    : 'sticky top-4 z-40 mb-8 overflow-hidden rounded-[34px] border border-stone-200 bg-[radial-gradient(circle_at_top_left,rgba(153,88,42,0.16),transparent_26%),linear-gradient(135deg,rgba(255,252,246,0.95)_0%,rgba(252,244,234,0.92)_100%)] shadow-[0_24px_60px_rgba(63,39,18,0.08)] backdrop-blur'
+    ? 'z-40 mb-8 overflow-hidden rounded-3xl border border-stone-300 bg-white shadow-[0_18px_45px_rgba(63,39,18,0.08)]'
+    : 'sticky top-4 z-40 mb-8 overflow-hidden rounded-3xl border border-stone-300 bg-white shadow-[0_18px_45px_rgba(63,39,18,0.08)]'
 
   useEffect(() => {
     if (!initialized) {
@@ -158,7 +197,9 @@ function AppRouter() {
             fallback={<LoginPage />}
             loading={!initialized}
           >
-            <ProfilePage />
+            <ProfileShell>
+              <ProfilePage />
+            </ProfileShell>
           </ProtectedRoute>
         </MainLayout>
       )
@@ -172,7 +213,9 @@ function AppRouter() {
             fallback={<LoginPage />}
             loading={!initialized}
           >
-            <ProfileEditPage />
+            <ProfileShell>
+              <ProfileEditPage />
+            </ProfileShell>
           </ProtectedRoute>
         </MainLayout>
       )
@@ -186,7 +229,9 @@ function AppRouter() {
             fallback={<LoginPage />}
             loading={!initialized}
           >
-            <ProfileAddressPage />
+            <ProfileShell>
+              <ProfileAddressPage />
+            </ProfileShell>
           </ProtectedRoute>
         </MainLayout>
       )
@@ -200,7 +245,9 @@ function AppRouter() {
             fallback={<LoginPage />}
             loading={!initialized}
           >
-            <ProfilePasswordPage />
+            <ProfileShell>
+              <ProfilePasswordPage />
+            </ProfileShell>
           </ProtectedRoute>
         </MainLayout>
       )
@@ -214,7 +261,9 @@ function AppRouter() {
             fallback={<LoginPage />}
             loading={!initialized}
           >
-            <CartPage />
+            <ProfileShell>
+              <CartPage />
+            </ProfileShell>
           </ProtectedRoute>
         </MainLayout>
       )
@@ -228,7 +277,9 @@ function AppRouter() {
             fallback={<LoginPage />}
             loading={!initialized}
           >
-            <WishlistPage />
+            <ProfileShell>
+              <WishlistPage />
+            </ProfileShell>
           </ProtectedRoute>
         </MainLayout>
       )
@@ -276,6 +327,20 @@ function AppRouter() {
       )
     }
 
+    if (pathname === ROUTES.paymentResult) {
+      return (
+        <MainLayout>
+          <ProtectedRoute
+            allowed={isAuthenticated}
+            fallback={<LoginPage />}
+            loading={!initialized}
+          >
+            <PaymentResultPage />
+          </ProtectedRoute>
+        </MainLayout>
+      )
+    }
+
     if (productId) {
       return (
         <MainLayout>
@@ -287,14 +352,35 @@ function AppRouter() {
     if (pathname === ROUTES.login) {
       return (
         <div className="auth-shell auth-shell--user">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
+            <header className="mb-8 overflow-hidden rounded-[34px] border border-stone-300 bg-white shadow-[0_24px_60px_rgba(63,39,18,0.08)]">
+              <div className="flex items-center px-6 py-5">
+                <div
+                  role="link"
+                  tabIndex={0}
+                  className="cursor-pointer rounded-xl bg-stone-950 px-4 py-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(63,39,18,0.06)]"
+                  onClick={() => navigateTo(ROUTES.home)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      navigateTo(ROUTES.home)
+                    }
+                  }}
+                >
+                  E-COMMERCE
+                </div>
+              </div>
+            </header>
+          </div>
+
           <div className="auth-panel auth-panel--user"> 
-          <ProtectedRoute
-            allowed={!isAuthenticated}
-            fallback={<ProfilePage />}
-            loading={!initialized}
-          >
-            <LoginPage />
-          </ProtectedRoute>
+            <ProtectedRoute
+              allowed={!isAuthenticated}
+              fallback={<ProfilePage />}
+              loading={!initialized}
+            >
+              <LoginPage />
+            </ProtectedRoute>
           </div>
         </div>
       )
@@ -303,6 +389,27 @@ function AppRouter() {
     if (pathname === ROUTES.forgotPassword) {
       return (
         <div className="auth-shell auth-shell--user">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
+            <header className="mb-8 overflow-hidden rounded-[34px] border border-stone-300 bg-white shadow-[0_24px_60px_rgba(63,39,18,0.08)]">
+              <div className="flex items-center px-6 py-5">
+                <div
+                  role="link"
+                  tabIndex={0}
+                  className="cursor-pointer rounded-xl bg-stone-950 px-4 py-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(63,39,18,0.06)]"
+                  onClick={() => navigateTo(ROUTES.home)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      navigateTo(ROUTES.home)
+                    }
+                  }}
+                >
+                  E-COMMERCE
+                </div>
+              </div>
+            </header>
+          </div>
+
           <div className="auth-panel auth-panel--user">
             <header className="auth-header">
               <Tag color="gold" bordered={false} className="mb-3 rounded-full px-3 py-1 font-semibold">
@@ -330,14 +437,66 @@ function AppRouter() {
     if (pathname === ROUTES.register) {
       return (
         <div className="auth-shell auth-shell--user">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
+            <header className="mb-8 overflow-hidden rounded-[34px] border border-stone-300 bg-white shadow-[0_24px_60px_rgba(63,39,18,0.08)]">
+              <div className="flex items-center px-6 py-5">
+                <div
+                  role="link"
+                  tabIndex={0}
+                  className="cursor-pointer rounded-xl bg-stone-950 px-4 py-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(63,39,18,0.06)]"
+                  onClick={() => navigateTo(ROUTES.home)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      navigateTo(ROUTES.home)
+                    }
+                  }}
+                >
+                  E-COMMERCE
+                </div>
+              </div>
+            </header>
+          </div>
+
           <div className="auth-panel auth-panel--user">
-          <ProtectedRoute
-            allowed={!isAuthenticated}
-            fallback={<ProfilePage />}
-            loading={!initialized}
-          >
-            <RegisterPage />
-          </ProtectedRoute>
+            <ProtectedRoute
+              allowed={!isAuthenticated}
+              fallback={<ProfilePage />}
+              loading={!initialized}
+            >
+              <RegisterPage />
+            </ProtectedRoute>
+          </div>
+        </div>
+      )
+    }
+
+    if (pathname === ROUTES.verifyEmail) {
+      return (
+        <div className="auth-shell auth-shell--user">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
+            <header className="mb-8 overflow-hidden rounded-[34px] border border-stone-300 bg-white shadow-[0_24px_60px_rgba(63,39,18,0.08)]">
+              <div className="flex items-center px-6 py-5">
+                <div
+                  role="link"
+                  tabIndex={0}
+                  className="cursor-pointer rounded-xl bg-stone-950 px-4 py-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(63,39,18,0.06)]"
+                  onClick={() => navigateTo(ROUTES.home)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      navigateTo(ROUTES.home)
+                    }
+                  }}
+                >
+                  E-COMMERCE
+                </div>
+              </div>
+            </header>
+          </div>
+
+          <div className="auth-panel auth-panel--user">
+            <VerifyEmailPage />
           </div>
         </div>
       )
@@ -346,10 +505,31 @@ function AppRouter() {
     if (pathname === ROUTES.resetPassword) {
       return (
         <div className="auth-shell auth-shell--user">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
+            <header className="mb-8 overflow-hidden rounded-[34px] border border-stone-300 bg-white shadow-[0_24px_60px_rgba(63,39,18,0.08)]">
+              <div className="flex items-center px-6 py-5">
+                <div
+                  role="link"
+                  tabIndex={0}
+                  className="cursor-pointer rounded-xl bg-stone-950 px-4 py-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(63,39,18,0.06)]"
+                  onClick={() => navigateTo(ROUTES.home)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      navigateTo(ROUTES.home)
+                    }
+                  }}
+                >
+                  E-COMMERCE
+                </div>
+              </div>
+            </header>
+          </div>
+
           <div className="auth-panel auth-panel--user">
             <header className="auth-header">
               <Tag color="gold" bordered={false} className="mb-3 rounded-full px-3 py-1 font-semibold">
-                RECOVERY PORTAL
+                Reset password
               </Tag>
               <Title level={1} style={{ color: '#1c1917', margin: 0, fontSize: '2.25rem' }}>
                 Reset password
@@ -480,69 +660,96 @@ function AppRouter() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
       <header className={headerClassName}>
-        <div className="flex flex-col gap-5 px-6 py-5 md:flex-row md:items-center md:justify-between md:px-8">
-          <div className="flex flex-wrap items-center gap-4">
-            <button
-              type="button"
-              className="grid h-10 w-10 place-items-center rounded-xl border border-stone-300 bg-white/78 text-sm font-semibold text-stone-700 shadow-[0_8px_20px_rgba(63,39,18,0.06)]"
+        <div className="grid gap-4 px-4 py-4 md:px-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div
+              role="link"
+              tabIndex={0}
+              className="w-fit cursor-pointer rounded-2xl bg-stone-950 px-4 py-3 text-sm font-extrabold tracking-normal text-white"
               onClick={() => navigateTo(ROUTES.home)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  navigateTo(ROUTES.home)
+                }
+              }}
             >
-              L
-            </button>
+              E-COMMERCE
+            </div>
+
+            <nav className="flex flex-wrap items-center gap-2 text-sm font-bold text-stone-800">
+              <button
+                type="button"
+                className={`rounded-full px-4 py-2 transition ${pathname === ROUTES.home || pathname === ROUTES.products ? 'bg-stone-950 text-white' : 'hover:bg-stone-100'}`}
+                style={pathname === ROUTES.home || pathname === ROUTES.products ? { color: '#ffffff' } : undefined}
+                onClick={() => navigateTo(ROUTES.products)}
+              >
+                Shop
+              </button>
+              <button
+                type="button"
+                className={`rounded-full px-4 py-2 transition ${pathname === ROUTES.orders ? 'bg-stone-950 text-white' : 'hover:bg-stone-100'}`}
+                style={pathname === ROUTES.orders ? { color: '#ffffff' } : undefined}
+                onClick={() => navigateTo(isAuthenticated ? ROUTES.orders : ROUTES.login)}
+              >
+                Orders
+              </button>
+              <button
+                type="button"
+                className={`rounded-full px-4 py-2 transition ${pathname === ROUTES.profile ? 'bg-stone-950 text-white' : 'hover:bg-stone-100'}`}
+                style={pathname === ROUTES.profile ? { color: '#ffffff' } : undefined}
+                onClick={() => navigateTo(isAuthenticated ? ROUTES.profile : ROUTES.login)}
+              >
+                Account
+              </button>
+            </nav>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <Input
-              className="md:w-[240px]"
-              placeholder="Search the storefront"
+              className="w-full lg:max-w-[520px]"
+              placeholder="Search products, categories, or keywords"
               size="large"
               value={headerSearchValue}
               onChange={(event) => handleHeaderSearchChange(event.target.value)}
             />
-            <AntButton size="large" type="button" onClick={() => navigateTo(ROUTES.filter)}>
-              Filter
-            </AntButton>
-            {isAuthenticated ? (
-              <AntButton size="large" onClick={handleLogout}>
-                Logout
+            <div className="flex flex-wrap items-center gap-2">
+              <AntButton size="large" type="button" onClick={() => navigateTo(ROUTES.filter)}>
+                Filter
               </AntButton>
-            ) : null}
-            <AntButton
-              shape="circle"
-              size="large"
-              onClick={() => navigateTo(isAuthenticated ? ROUTES.wishlist : ROUTES.login)}
-              aria-label="Wishlist"
-            >
-              <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
-                <path d="M12 2.75 14.84 8.5l6.35.92-4.6 4.48 1.09 6.32L12 17.24 6.32 20.22l1.09-6.32-4.6-4.48 6.35-.92L12 2.75Z" />
-              </svg>
-            </AntButton>
-            <AntButton
-              shape="circle"
-              size="large"
-              onClick={() => navigateTo(isAuthenticated ? ROUTES.cart : ROUTES.login)}
-              aria-label="Cart"
-            >
-              <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[1.8]" aria-hidden="true">
-                <circle cx="9" cy="19" r="1.6" />
-                <circle cx="18" cy="19" r="1.6" />
-                <path d="M3 4h2.2l2.1 9.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.76L20 7H7.1" />
-              </svg>
-            </AntButton>
-            <AntButton
-              shape="circle"
-              size="large"
-              onClick={() => navigateTo(isAuthenticated ? ROUTES.profile : ROUTES.login)}
-              aria-label={isAuthenticated ? 'Account' : 'Sign in'}
-            >
+              <AntButton
+                size="large"
+                onClick={() => navigateTo(isAuthenticated ? ROUTES.wishlist : ROUTES.login)}
+              >
+                Wishlist ({wishlistItems.length})
+              </AntButton>
+              <AntButton
+                size="large"
+                type="primary"
+                onClick={() => navigateTo(isAuthenticated ? ROUTES.cart : ROUTES.login)}
+              >
+                Cart ({cartTotalItems})
+              </AntButton>
               {isAuthenticated ? (
-                userBadgeLabel || 'U'
+                <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} trigger={['hover']} placement="bottomRight">
+                  <AntButton shape="circle" size="large" aria-label="Account">
+                    {userBadgeLabel || 'U'}
+                  </AntButton>
+                </Dropdown>
               ) : (
-                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
-                  <path d="M12 12.2a4.1 4.1 0 1 0 0-8.2 4.1 4.1 0 0 0 0 8.2Zm0 2.05c-4.34 0-7.86 2.35-7.86 5.25 0 .28.22.5.5.5h14.72c.28 0 .5-.22.5-.5 0-2.9-3.52-5.25-7.86-5.25Z" />
-                </svg>
+                <AntButton
+                  size="large"
+                  onClick={() => navigateTo(ROUTES.login)}
+                >
+                  Sign in
+                </AntButton>
               )}
-            </AntButton>
+              {isAuthenticated ? (
+                <AntButton size="large" onClick={handleLogout}>
+                  Logout
+                </AntButton>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>

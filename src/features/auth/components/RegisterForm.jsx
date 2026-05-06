@@ -164,7 +164,7 @@ function RegisterForm() {
         </div>
       </Card>
 
-      <div className="flex items-center justify-center gap-2 text-sm text-stone-500">
+      <div className="flex items-center justify-center gap-2 text-sm font-medium text-stone-700">
         <span>Already have an account</span>
         <button
           type="button"
@@ -180,7 +180,7 @@ function RegisterForm() {
           <Alert type="success" message={status} showIcon />
           {lastRegisteredEmail ? (
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-sm text-stone-600">
+              <p className="text-sm font-medium text-stone-700">
                 Didn&apos;t receive the verification email for{' '}
                 <strong className="text-stone-900">{lastRegisteredEmail}</strong>?
               </p>

@@ -14,13 +14,13 @@ function WishlistPage() {
     return (
       <section className="grid gap-5">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
             Wishlist
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
             No saved products yet
           </h2>
-          <p className="mt-2 text-sm text-stone-600">
+          <p className="mt-2 text-sm font-medium text-stone-700">
             Save products from the storefront to compare them later.
           </p>
         </div>
@@ -36,13 +36,13 @@ function WishlistPage() {
   return (
     <section className="grid gap-6">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
           Wishlist
         </p>
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
           Saved products
         </h2>
-        <p className="mt-2 text-sm text-stone-600">
+        <p className="mt-2 text-sm font-medium text-stone-700">
           Keep an eye on products you may want to compare or buy later.
         </p>
       </div>
@@ -60,13 +60,13 @@ function WishlistPage() {
                 alt={product.name}
               />
             ) : (
-              <div className="grid aspect-[4/3] w-full place-items-center rounded-xl bg-stone-100 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
+              <div className="grid aspect-[4/3] w-full place-items-center rounded-xl bg-stone-200 text-xs font-bold uppercase tracking-[0.12em] text-stone-800">
                 {product.category}
               </div>
             )}
 
             <div>
-              <Paragraph className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+              <Paragraph className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-stone-700">
                 {product.category}
               </Paragraph>
               <button
@@ -80,7 +80,7 @@ function WishlistPage() {
 
             <Title level={5} style={{ margin: 0 }}>{formatCurrency(product.price)}</Title>
 
-            <div className="flex flex-wrap gap-3 border-t border-stone-200 pt-4">
+            <div className="flex flex-wrap gap-3 border-t border-stone-300 pt-4">
               <Button type="button" className="flex-1" onClick={() => addCartItem(product)}>
                 Add to cart
               </Button>

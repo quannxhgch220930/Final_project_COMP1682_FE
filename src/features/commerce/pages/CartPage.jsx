@@ -8,6 +8,7 @@ import { handleApiError } from '../../../shared/utils/handleApiError'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { useCommerce } from '../hooks/useCommerce'
 import { orderApi } from '../api/order.api'
+import { vnpayPaymentApi } from '../api/vnpayPayment.api'
 import { useEffect, useState } from 'react'
 import { addressApi } from '../../user/api/address.api'
 
@@ -29,6 +30,7 @@ function CartPage() {
     receiverAddress: '',
     receiverName: '',
     receiverPhone: '',
+    paymentMethod: 'COD',
   })
   const [addresses, setAddresses] = useState([])
   const [isAddressesLoading, setIsAddressesLoading] = useState(false)
@@ -92,10 +94,17 @@ function CartPage() {
         receiverAddress: checkoutForm.receiverAddress,
         receiverName: checkoutForm.receiverName,
         receiverPhone: checkoutForm.receiverPhone,
+        paymentMethod: checkoutForm.paymentMethod,
       })
 
       await syncCart()
-      navigateTo(ROUTES.orderDetail(order.id))
+
+      if (checkoutForm.paymentMethod === 'VNPAY') {
+        const paymentUrl = await vnpayPaymentApi.createPaymentUrl(order.id)
+        window.location.href = paymentUrl
+      } else {
+        navigateTo(ROUTES.orderDetail(order.id))
+      }
     } catch (error) {
       setErrorMessage(handleApiError(error))
     } finally {
@@ -107,13 +116,13 @@ function CartPage() {
     return (
       <section className="grid gap-5">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
             Shopping cart
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
             Your cart is empty
           </h2>
-          <p className="mt-2 text-sm text-stone-600">
+          <p className="mt-2 text-sm font-medium text-stone-700">
             Add products from the storefront before checkout.
           </p>
         </div>
@@ -129,13 +138,13 @@ function CartPage() {
   return (
     <section className="grid gap-8">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
           Shopping cart
         </p>
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
           Review your bag before checkout
         </h2>
-        <p className="mt-2 text-sm text-stone-600">
+        <p className="mt-2 text-sm font-medium text-stone-700">
           Confirm quantities, delivery details, and pricing before placing the
           order.
         </p>
@@ -155,7 +164,7 @@ function CartPage() {
                   alt={item.product.name}
                 />
               ) : (
-                <div className="grid aspect-square w-28 place-items-center rounded-2xl bg-stone-100 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
+                <div className="grid aspect-square w-28 place-items-center rounded-2xl bg-stone-200 text-xs font-bold uppercase tracking-[0.12em] text-stone-800">
                   {item.product.category}
                 </div>
               )}
@@ -168,8 +177,8 @@ function CartPage() {
                 >
                   <Title level={4} style={{ margin: 0 }}>{item.product.name}</Title>
                 </button>
-                <p className="text-sm text-stone-500">{item.product.category}</p>
-                <div className="grid gap-1 text-sm text-stone-600">
+                <p className="text-sm font-medium text-stone-700">{item.product.category}</p>
+                <div className="grid gap-1 text-sm font-medium text-stone-700">
                   <p>Unit price: {formatCurrency(item.unitPrice)}</p>
                   {item.currentPrice !== item.unitPrice ? (
                     <p className="text-xs text-amber-700">
@@ -179,7 +188,7 @@ function CartPage() {
                 </div>
               </div>
 
-              <div className="grid gap-3 rounded-[24px] border border-stone-200 bg-white/82 p-4">
+              <div className="grid gap-3 rounded-[24px] border border-stone-300 bg-white p-4">
                 <Input
                   min="1"
                   type="number"
@@ -205,12 +214,12 @@ function CartPage() {
 
         <Card className="grid gap-5 shadow-[0_24px_55px_rgba(63,39,18,0.09)]">
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-stone-700">
               Checkout summary
             </p>
             <h3 className="text-2xl font-semibold text-stone-900">Complete your order</h3>
           </div>
-          <div className="grid gap-3 text-sm text-stone-600">
+          <div className="grid gap-3 text-sm font-medium text-stone-700">
             <div className="flex items-center justify-between gap-4">
               <span>Items</span>
               <strong className="text-stone-900">{cartTotalItems}</strong>
@@ -318,6 +327,25 @@ function CartPage() {
                 }))
               }
             />
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-stone-700" htmlFor="payment-method">
+                Payment method
+              </label>
+              <Select
+                id="payment-method"
+                value={checkoutForm.paymentMethod}
+                onChange={(value) =>
+                  setCheckoutForm((current) => ({
+                    ...current,
+                    paymentMethod: value,
+                  }))
+                }
+                options={[
+                  { label: 'Cash on Delivery (COD)', value: 'COD' },
+                  { label: 'VNPay', value: 'VNPAY' },
+                ]}
+              />
+            </div>
           </div>
           {!isAuthenticated ? (
             <Alert type="warning" message="Sign in first to place this order." showIcon />

@@ -8,7 +8,7 @@ function AdminLoginPage() {
           WELCOME ADMIN
         </h2>
         <p className="mt-2 text-sm text-stone-300">
-          use your admin Access account to manage the web
+          use your admin Access account to manage the dashboard
         </p>
       </div>
 

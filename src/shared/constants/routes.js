@@ -12,6 +12,7 @@ export const ROUTES = {
   oauthCallback: '/oauth2/callback',
   orderDetail: (id) => `/orders/${id}`,
   orders: '/orders',
+  paymentResult: '/payment/result',
   profile: '/profile',
   profileEdit: '/profile/edit',
   profileAddress: '/profile/address',
@@ -20,6 +21,7 @@ export const ROUTES = {
   products: '/products',
   register: '/register',
   resetPassword: '/reset-password',
+  verifyEmail: '/verify-email',
   wishlist: '/wishlist',
   filter: '/filter',
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Card, InputNumber, Select, Typography } from 'antd'
 import Button from '../../../shared/ui/Button'
 import { navigateTo } from '../../../shared/lib/navigation'
@@ -11,11 +11,6 @@ function FilterPage() {
   const { categories, filters, selectedCategoryId } = useProducts()
   const [localSelectedCategoryId, setLocalSelectedCategoryId] = useState(selectedCategoryId)
   const [localFilters, setLocalFilters] = useState(filters)
-
-  useEffect(() => {
-    setLocalSelectedCategoryId(selectedCategoryId)
-    setLocalFilters(filters)
-  }, [selectedCategoryId, filters])
 
   const clearFilters = () => {
     setLocalSelectedCategoryId('')
@@ -53,7 +48,7 @@ function FilterPage() {
     <section className="grid gap-8">
       <Card className="grid gap-4 bg-[rgba(255,252,247,0.88)]">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-stone-700">
             Filters
           </p>
           <Title level={2} className="mt-2 text-stone-900">

@@ -215,13 +215,13 @@ function AddressBook() {
     <section className="grid gap-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
             Shipping address
           </p>
           <h3 className="text-2xl font-semibold tracking-tight text-stone-900">
             Saved shipping addresses
           </h3>
-          <p className="mt-2 text-sm text-stone-600">
+          <p className="mt-2 text-sm font-medium text-stone-700">
             Manage your shipping addresses for faster checkout.
           </p>
         </div>
@@ -239,7 +239,7 @@ function AddressBook() {
           <Card styles={{ body: { padding: 24 } }}>
             <div className="grid gap-4">
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
                   {formTitle}
                 </p>
                 <h4 className="text-xl font-semibold text-stone-900">
@@ -374,7 +374,7 @@ function AddressBook() {
                   <Title level={4} style={{ margin: 0 }}>
                     {address.receiverName}
                   </Title>
-                  <Paragraph className="!mb-0 text-sm !text-stone-600">{address.receiverPhone}</Paragraph>
+                  <Paragraph className="!mb-0 text-sm font-medium !text-stone-700">{address.receiverPhone}</Paragraph>
                   <Paragraph className="!mb-0 text-sm !text-stone-700">
                     {address.fullAddress ||
                       [address.street, address.ward, address.district, address.province]

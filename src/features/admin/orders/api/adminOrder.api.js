@@ -36,4 +36,7 @@ export const adminOrderApi = {
       message: response?.message || 'Order status updated successfully',
     }
   },
+  delete: async (id) => {
+    await httpClient.delete(API_ENDPOINTS.admin.deleteOrder(id))
+  },
 }

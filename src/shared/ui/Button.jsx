@@ -12,14 +12,17 @@ function Button({ children, className = '', type = 'button', variant = 'primary'
       style={
         isPrimary
           ? {
-              background: 'linear-gradient(135deg,#99582a 0%,#7f4a22 100%)',
-              borderColor: '#99582a',
-              boxShadow: '0 12px 30px rgba(111,69,24,0.22)',
+              background: 'linear-gradient(135deg,#7c2d12 0%,#431407 100%)',
+              borderColor: '#431407',
+              color: '#ffffff',
+              fontWeight: 700,
+              boxShadow: '0 12px 30px rgba(67,20,7,0.24)',
             }
           : {
-              background: 'rgba(245,245,244,0.92)',
-              borderColor: 'rgba(214,211,209,0.9)',
-              color: '#292524',
+              background: '#ffffff',
+              borderColor: '#a8a29e',
+              color: '#1c1917',
+              fontWeight: 700,
               boxShadow: '0 8px 24px rgba(63,39,18,0.08)',
             }
       }

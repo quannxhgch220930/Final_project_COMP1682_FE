@@ -37,7 +37,11 @@ function ProfileForm({ initialValues, onSubmit }) {
     setIsSubmitting(true)
 
     try {
-      const response = await onSubmit(formData)
+      const response = await onSubmit({
+        dateOfBirth: formData.dateOfBirth,
+        fullName: formData.fullName,
+        phone: formData.phone,
+      })
       setStatus(response?.message || 'Profile updated successfully')
     } catch (error) {
       setStatus('')
@@ -74,9 +78,13 @@ function ProfileForm({ initialValues, onSubmit }) {
               id="profile-email"
               type="email"
               value={formData.email}
-              onChange={handleChange('email')}
-              placeholder="example@email.com"
+              readOnly
+              aria-describedby="profile-email-note"
+              className="cursor-not-allowed border-stone-300 bg-stone-100 font-semibold text-stone-700"
             />
+            <p id="profile-email-note" className="text-xs font-medium text-stone-700">
+              Email is used for account verification and cannot be changed here.
+            </p>
           </div>
 
           <div className="grid gap-2">

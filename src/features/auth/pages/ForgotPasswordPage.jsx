@@ -7,14 +7,8 @@ function ForgotPasswordPage() {
   return (
     <section className="grid gap-6">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
-          PASSWORD RECOVERY
-        </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
-          Forgot your password?
-        </h2>
-        <p className="mt-2 text-sm text-stone-600">
-          Enter your email and we will send for reset  password.
+        <p className="mt-2 text-sm font-medium text-stone-700">
+          Enter your email and we will send you an email to reset your password.
         </p>
       </div>
 

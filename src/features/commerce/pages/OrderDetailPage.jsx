@@ -11,6 +11,22 @@ import { orderApi } from '../api/order.api'
 const { Paragraph, Title } = Typography
 
 const CANCELLABLE_STATUSES = new Set(['PENDING', 'CONFIRMED'])
+const CREATED_ORDER_NOTES = new Set([
+  'Order has been created',
+  'Order created',
+])
+
+function getOrderTimelineNote(log) {
+  if (!log?.note) {
+    return ''
+  }
+
+  if (CREATED_ORDER_NOTES.has(log.note) && log.status === 'PENDING') {
+    return 'Please wait for a moment while we confirming your order'
+  }
+
+  return log.note
+}
 
 function OrderDetailPage({ orderId }) {
   const [errorMessage, setErrorMessage] = useState('')
@@ -101,19 +117,16 @@ function OrderDetailPage({ orderId }) {
         <Button type="button" variant="secondary" onClick={() => navigateTo(ROUTES.orders)}>
           Back to orders
         </Button>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-          #{order.id}
-        </p>
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
           Order detail
         </p>
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
           {order.status}
         </h2>
-        <p className="mt-2 text-sm text-stone-600">{formatDate(order.createdAt)}</p>
+        <p className="mt-2 text-sm font-medium text-stone-700">{formatDate(order.createdAt)}</p>
       </div>
 
       {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
@@ -132,7 +145,7 @@ function OrderDetailPage({ orderId }) {
                   alt={item.product.name}
                 />
               ) : (
-                <div className="grid aspect-square w-24 place-items-center rounded-xl bg-stone-100 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
+                <div className="grid aspect-square w-24 place-items-center rounded-xl bg-stone-200 text-xs font-bold uppercase tracking-[0.12em] text-stone-800">
                   {item.product.category}
                 </div>
               )}
@@ -145,10 +158,10 @@ function OrderDetailPage({ orderId }) {
                 >
                   <Title level={4} style={{ margin: 0 }}>{item.product.name}</Title>
                 </button>
-                <p className="text-sm text-stone-500">{item.product.category}</p>
+                <p className="text-sm font-medium text-stone-700">{item.product.category}</p>
               </div>
 
-              <div className="grid gap-2 text-sm text-stone-600">
+              <div className="grid gap-2 text-sm font-medium text-stone-700">
                 <p>Qty: {item.quantity}</p>
                 <p>Unit: {formatCurrency(item.unitPrice)}</p>
                 <p className="font-semibold text-stone-900">
@@ -161,7 +174,7 @@ function OrderDetailPage({ orderId }) {
           {order.statusLogs.length > 0 ? (
             <Card>
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-stone-700">
                   Status history
                 </p>
                 <h3 className="text-xl font-semibold text-stone-900">
@@ -174,11 +187,11 @@ function OrderDetailPage({ orderId }) {
                   children: (
                     <div key={`${log.status}-${log.changedAt || index}`} className="grid gap-1">
                       <Tag color="gold">{log.status}</Tag>
-                      <span className="text-xs text-stone-500">
+                      <span className="text-xs font-medium text-stone-700">
                         {log.changedAt ? formatDate(log.changedAt) : 'N/A'}
                       </span>
-                      {log.changedBy ? <Paragraph className="!mb-0 text-sm text-stone-600">Changed by: {log.changedBy}</Paragraph> : null}
-                      {log.note ? <Paragraph className="!mb-0 text-sm text-stone-600">{log.note}</Paragraph> : null}
+                      {log.changedBy ? <Paragraph className="!mb-0 text-sm font-medium text-stone-700">Changed by: {log.changedBy}</Paragraph> : null}
+                      {getOrderTimelineNote(log) ? <Paragraph className="!mb-0 text-sm font-medium text-stone-700">{getOrderTimelineNote(log)}</Paragraph> : null}
                     </div>
                   ),
                 }))}
@@ -193,6 +206,8 @@ function OrderDetailPage({ orderId }) {
             <Descriptions.Item label="Subtotal">{formatCurrency(order.subtotal)}</Descriptions.Item>
             <Descriptions.Item label="Discount">{formatCurrency(order.discountAmount)}</Descriptions.Item>
             <Descriptions.Item label="Total">{formatCurrency(order.total)}</Descriptions.Item>
+            {order.paymentMethod ? <Descriptions.Item label="Payment Method">{order.paymentMethod}</Descriptions.Item> : null}
+            {order.paymentStatus ? <Descriptions.Item label="Payment Status">{order.paymentStatus}</Descriptions.Item> : null}
             {order.shippingName ? <Descriptions.Item label="Receiver">{order.shippingName}</Descriptions.Item> : null}
             {order.shippingPhone ? <Descriptions.Item label="Phone">{order.shippingPhone}</Descriptions.Item> : null}
             {order.shippingAddress ? <Descriptions.Item label="Address">{order.shippingAddress}</Descriptions.Item> : null}
@@ -208,14 +223,6 @@ function OrderDetailPage({ orderId }) {
             >
               {isSubmitting ? 'Cancelling...' : 'Cancel order'}
             </Button>
-            {!canCancel ? (
-              <Alert
-                className="mt-3"
-                type="info"
-                message="Orders can only be cancelled while they are pending or confirmed."
-                showIcon
-              />
-            ) : null}
           </div>
         </Card>
       </div>

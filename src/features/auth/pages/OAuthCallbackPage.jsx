@@ -58,17 +58,17 @@ function OAuthCallbackPage() {
       ) : (
         <>
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-stone-700">
               GOOGLE CALLBACK
             </p>
             <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
               Completing sign in
             </h2>
-            <p className="mt-2 text-sm text-stone-600">
+            <p className="mt-2 text-sm font-medium text-stone-700">
               Your Google account is being linked to the storefront session.
             </p>
           </div>
-          <p className="text-sm text-stone-600">Please wait a moment.</p>
+          <p className="text-sm font-medium text-stone-700">Please wait a moment.</p>
         </>
       )}
     </section>

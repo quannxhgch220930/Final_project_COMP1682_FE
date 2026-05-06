@@ -19,7 +19,7 @@ function LoginPage() {
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900 md:text-4xl">
           WELCOME BACK
         </h2>
-        <p className="mt-2 text-sm text-stone-600">
+        <p className="mt-2 text-sm font-medium text-stone-700">
           Please enter your email and password to login
         </p>
       </div>
@@ -50,7 +50,7 @@ function LoginPage() {
               Login with Google
             </button>
 
-            <div className="flex items-center justify-center gap-2 text-sm text-stone-500">
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-stone-700">
               <span>Don't have an account?</span>
               <button
                 type="button"

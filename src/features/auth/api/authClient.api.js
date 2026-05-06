@@ -90,6 +90,21 @@ export const authClientApi = {
       timestamp: response?.timestamp ?? null,
     }
   },
+  verifyEmail: async (token) => {
+    const query = new URLSearchParams()
+    query.set('token', token)
+
+    const response = await httpClient.get(
+      `${API_ENDPOINTS.auth.verifyEmail}?${query}`,
+    )
+
+    return {
+      code: response?.code ?? 200,
+      data: response?.data ?? null,
+      message: response?.message || 'Email verification completed.',
+      timestamp: response?.timestamp ?? null,
+    }
+  },
   resetPassword: async (payload) => {
     const response = await httpClient.post(API_ENDPOINTS.auth.resetPassword, payload)
 

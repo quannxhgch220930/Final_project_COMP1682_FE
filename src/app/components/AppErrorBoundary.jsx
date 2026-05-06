@@ -20,15 +20,15 @@ class AppErrorBoundary extends Component {
     if (this.state.error) {
       return (
         <main className="mx-auto max-w-4xl px-5 py-10">
-          <section className="grid gap-4 rounded-[24px] border border-stone-200 bg-white/90 p-8 shadow-[0_20px_45px_rgba(63,39,18,0.08)] backdrop-blur">
+          <section className="grid gap-4 rounded-[24px] border border-stone-300 bg-white p-8 shadow-[0_20px_45px_rgba(63,39,18,0.08)]">
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
                 Application Error
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
                 Something went wrong while starting the app
               </h2>
-              <p className="mt-2 text-sm text-stone-600">
+              <p className="mt-2 text-sm font-medium text-stone-700">
                 A runtime error prevented the UI from rendering normally.
               </p>
             </div>

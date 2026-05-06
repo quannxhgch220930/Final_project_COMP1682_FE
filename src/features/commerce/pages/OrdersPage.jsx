@@ -57,13 +57,13 @@ function OrdersPage() {
     return (
       <section className="grid gap-5">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
             Orders
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
             No orders yet
           </h2>
-          <p className="mt-2 text-sm text-stone-600">
+          <p className="mt-2 text-sm font-medium text-stone-700">
             Place your first order from the cart to start building order history.
           </p>
         </div>
@@ -79,13 +79,13 @@ function OrdersPage() {
   return (
     <section className="grid gap-6">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-700">
           Orders
         </p>
         <h2 className="text-3xl font-semibold tracking-tight text-stone-900">
           Order history
         </h2>
-        <p className="mt-2 text-sm text-stone-600">
+        <p className="mt-2 text-sm font-medium text-stone-700">
           Track the status and value of every order you have placed.
         </p>
       </div>
@@ -97,16 +97,13 @@ function OrdersPage() {
             className="grid gap-4 shadow-[0_22px_50px_rgba(63,39,18,0.08)] md:grid-cols-[minmax(0,1fr)_auto]"
           >
             <div className="grid gap-2">
-              <Paragraph className="!mb-0 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-                #{order.id}
-              </Paragraph>
               <Title level={4} style={{ margin: 0 }}>
                 {order.totalQuantity} items
               </Title>
-              <Paragraph className="!mb-0 text-sm text-stone-600">
+              <Paragraph className="!mb-0 text-sm font-medium text-stone-700">
                 {formatDate(order.createdAt)} | {order.status}
               </Paragraph>
-              <Paragraph className="!mb-0 text-sm text-stone-600">
+              <Paragraph className="!mb-0 text-sm font-medium text-stone-700">
                 Total: <strong className="text-stone-900">{formatCurrency(order.total)}</strong>
               </Paragraph>
               <Tag color="gold">{order.status}</Tag>

@@ -65,7 +65,7 @@ function ResetPasswordForm() {
       className="grid gap-5"
       onSubmit={handleSubmit}
     >
-      <Card className="border-amber-200/70 bg-white/80" styles={{ body: { padding: 24 } }}>
+      <Card className="border-amber-300 bg-white" styles={{ body: { padding: 24 } }}>
         <div className="grid gap-5">
           <div className="grid gap-2">
             <label className="text-sm font-medium text-stone-700" htmlFor="reset-password-new-password">

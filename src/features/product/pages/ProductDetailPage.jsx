@@ -48,7 +48,7 @@ function ProductDetailPage({ productId }) {
   }, [productId])
 
   if (isLoading) {
-    return <p className="text-sm text-stone-500">Loading product details...</p>
+    return <p className="text-sm font-medium text-stone-700">Loading product details...</p>
   }
 
   if (errorMessage) {
@@ -67,7 +67,7 @@ function ProductDetailPage({ productId }) {
   if (!product) {
     return (
       <section className="grid gap-4">
-        <p className="text-sm text-stone-500">Product not found.</p>
+        <p className="text-sm font-medium text-stone-700">Product not found.</p>
         <div>
           <Button type="button" variant="secondary" onClick={() => navigateTo(ROUTES.home)}>
             Back to storefront
@@ -98,12 +98,12 @@ function ProductDetailPage({ productId }) {
         <Button
           type="button"
           variant="secondary"
-          className="bg-white/80"
+          className="bg-white"
           onClick={() => navigateTo(ROUTES.home)}
         >
           Back to storefront
         </Button>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-500">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-stone-700">
           {product.category}
         </p>
       </div>
@@ -112,20 +112,20 @@ function ProductDetailPage({ productId }) {
         <div className="grid gap-4">
           {activeImageUrl ? (
             <img
-              className="aspect-[4/3] w-full rounded-[34px] border border-stone-200 bg-stone-50 object-cover shadow-[0_24px_55px_rgba(63,39,18,0.1)]"
+              className="aspect-[4/3] w-full rounded-[34px] border border-stone-300 bg-stone-50 object-cover shadow-[0_24px_55px_rgba(63,39,18,0.1)]"
               src={activeImageUrl}
               alt={product.name}
             />
           ) : (
-            <div className="grid aspect-[4/3] w-full place-items-center rounded-[32px] border border-stone-200 bg-[radial-gradient(circle_at_top,rgba(153,88,42,0.16),transparent_26%),linear-gradient(135deg,#f6ecdf_0%,#ead5bc_100%)] p-8 shadow-[0_20px_45px_rgba(63,39,18,0.08)]">
+            <div className="grid aspect-[4/3] w-full place-items-center rounded-[32px] border border-stone-300 bg-[linear-gradient(135deg,#fff7ed_0%,#e7e5e4_100%)] p-8 shadow-[0_20px_45px_rgba(63,39,18,0.08)]">
               <div className="grid gap-3 text-center">
-                <span className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
+                <span className="text-xs font-bold uppercase tracking-[0.24em] text-stone-700">
                   {product.category}
                 </span>
                 <span className="text-4xl font-semibold tracking-tight text-[color:var(--color-primary-strong)]">
                   {product.name}
                 </span>
-                <span className="text-sm text-stone-600">
+                <span className="text-sm font-medium text-stone-700">
                   Product image is not available yet.
                 </span>
               </div>
@@ -141,7 +141,7 @@ function ProductDetailPage({ productId }) {
                   className={`overflow-hidden rounded-2xl border bg-white shadow-[0_10px_25px_rgba(63,39,18,0.06)] transition ${
                     activeImageUrl === imageUrl
                       ? 'border-stone-900 ring-2 ring-stone-900/10'
-                      : 'border-stone-200'
+                      : 'border-stone-300'
                   }`}
                   onClick={() => setActiveImageUrl(imageUrl)}
                 >
@@ -156,10 +156,10 @@ function ProductDetailPage({ productId }) {
           ) : null}
         </div>
 
-        <div className="grid gap-6 rounded-[34px] border border-stone-200 bg-[rgba(255,251,245,0.92)] p-7 shadow-[0_26px_60px_rgba(63,39,18,0.1)] backdrop-blur">
-          <div className="grid gap-4 border-b border-stone-200 pb-5">
+        <div className="grid gap-6 rounded-[34px] border border-stone-300 bg-white p-7 shadow-[0_26px_60px_rgba(63,39,18,0.1)]">
+          <div className="grid gap-4 border-b border-stone-300 pb-5">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-500">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-stone-700">
                 Product detail
               </p>
               <span
@@ -181,8 +181,8 @@ function ProductDetailPage({ productId }) {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.14em] text-stone-500">Stock</p>
+              <div className="rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-stone-700">Stock</p>
                 <strong className="mt-1 block text-lg text-stone-900">
                   {product.stock}
                 </strong>
@@ -208,18 +208,18 @@ function ProductDetailPage({ productId }) {
             </Button>
           </div>
 
-          <div className="grid gap-3 rounded-[30px] border border-stone-200 bg-white p-5">
+          <div className="grid gap-3 rounded-[30px] border border-stone-300 bg-white p-5">
             <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-stone-500">Category</span>
+              <span className="text-sm font-medium text-stone-700">Category</span>
               <strong className="text-stone-900">{product.category}</strong>
             </div>
             <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-stone-500">Stock</span>
+              <span className="text-sm font-medium text-stone-700">Stock</span>
               <strong className="text-stone-900">{product.stock}</strong>
             </div>
             {product.slug ? (
               <div className="flex items-center justify-between gap-4">
-                <span className="text-sm text-stone-500">Slug</span>
+                <span className="text-sm font-medium text-stone-700">Slug</span>
                 <strong className="break-all text-stone-900">{product.slug}</strong>
               </div>
             ) : null}
@@ -227,7 +227,7 @@ function ProductDetailPage({ productId }) {
 
           <div className="grid gap-3">
             <h3 className="text-xl font-semibold text-stone-900">Description</h3>
-            <p className="text-sm leading-7 text-stone-600">
+            <p className="text-sm font-medium leading-7 text-stone-700">
               {product.description || 'No description available for this product yet.'}
             </p>
           </div>
